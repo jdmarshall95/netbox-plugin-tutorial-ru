@@ -1,33 +1,33 @@
-# NetBox Plugin Development Tutorial
+# Руководство по разработке плагинов для NetBox
 
-This guide seeks to demonstrate the process of developing a custom plugin for NetBox v3.2 or later. By following each of the prescribed steps, the reader will create from scratch a simple plugin for managing access lists in NetBox, utilizing all major components of the NetBox plugin framework.
+Это руководство призвано продемонстрировать процесс разработки пользовательского плагина для NetBox версии 3.2 или более поздней. Следуя каждому из предписанных шагов, читатель создаст с нуля простой плагин для управления списками доступа в NetBox, используя все основные компоненты фреймворка плагинов NetBox .
 
-A completed copy of the demo plugin created in this tutorial is available in the [`netbox-plugin-demo`](https://github.com/netbox-community/netbox-plugin-demo) repository for reference. For your convenience, the completed code corresponding to each step in the tutorial exists as a named branch in the demo repo. For example, if you want to start fresh on step 5, simply check out the `step04-forms` branch.
+Полная копия демонстрационного плагина, созданного в этом руководстве, доступна в [`netbox-plugin-demo`].(https://github.com/netbox-community/netbox-plugin-demo ) хранилище для справки. Для вашего удобства завершенный код, соответствующий каждому шагу в руководстве, существует в виде именованной ветви в демонстрационном репозитории. Например, если вы хотите начать с шага 5, просто переключитесь на ветку `step04-forms`.
 
-### Prerequisites
+### Подготовка
 
-Before attempting to create a plugin, please assess your personal ability. Plugin authors should have reasonable proficiency in the following:
+Прежде чем пытаться создать плагин, пожалуйста, оцените свои личные способности. Авторы плагинов должны обладать достаточными знаниями в следующих областях:
 
-* Python programming
-* The [Django](https://www.djangoproject.com/) framework
-* REST API fundamentals (where applicable)
-* Installing, configuring, and using NetBox
+* Программирование на Python
+* Фреймворк [Django](https://www.djangoproject.com/)
+* Основы REST API (где применимо)
+* Установка, настройка и использование NetBox
 
-### Contents
+### Оглавление
 
-* [Step 1: Initial Setup](/tutorial/step01-initial-setup.md) :arrow_left: Start here!
-* [Step 2: Models](/tutorial/step02-models.md)
-* [Step 3: Tables](/tutorial/step03-tables.md)
-* [Step 4: Forms](/tutorial/step04-forms.md)
-* [Step 5: Views](/tutorial/step05-views.md)
-* [Step 6: Templates](/tutorial/step06-templates.md)
-* [Step 7: Navigation](/tutorial/step07-navigation.md)
-* [Step 8: Filter Sets](/tutorial/step08-filter-sets.md)
-* [Step 9: REST API](/tutorial/step09-rest-api.md)
-* [Step 10: GraphQL API](/tutorial/step10-graphql-api.md)
-* [Step 11: Search](/tutorial/step11-search.md)
+* [Шаг 1: Initial Setup](/tutorial/step01-initial-setup.md) :arrow_left: Начать здесь!
+* [Шаг 2: Models](/tutorial/step02-models.md)
+* [Шаг 3: Tables](/tutorial/step03-tables.md)
+* [Шаг 4: Forms](/tutorial/step04-forms.md)
+* [Шаг 5: Views](/tutorial/step05-views.md)
+* [Шаг 6: Templates](/tutorial/step06-templates.md)
+* [Шаг 7: Navigation](/tutorial/step07-navigation.md)
+* [Шаг 8: Filter Sets](/tutorial/step08-filter-sets.md)
+* [Шаг 9: REST API](/tutorial/step09-rest-api.md)
+* [Шаг 10: GraphQL API](/tutorial/step10-graphql-api.md)
+* [Шаг 11: Search](/tutorial/step11-search.md)
 
-### Reference
+### Документация
 
 * [NetBox Plugin Development Documentation](https://netbox.readthedocs.io/en/stable/plugins/development/)
 
