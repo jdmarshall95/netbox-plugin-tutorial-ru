@@ -1,19 +1,19 @@
-# Step 2: Models
+# Шаг 2: Модели
 
-In this step, we're going to define some Django models to hold our plugin's data. A model is a Python class that represents a table in the underlying PostgreSQL database; each instance of a model equates to a row in the table. We use models instead of raw SQL because interacting with Python objects is much more convenient and flexible.
+На этом шаге мы собираемся определить некоторые модели Django для хранения данных нашего плагина. Модель - это класс Python, который представляет таблицу в базовой базе данных PostgreSQL; каждый экземпляр модели соответствует строке в таблице. Мы используем модели вместо необработанного SQL, потому что взаимодействие с объектами Python намного удобнее и гибче.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step01-initial-setup`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout step01-initial-setup`.
 
-## Create the Models
+## Создайте модели
 
-First, `cd` into the `netbox_access_lists` directory and create a file named `models.py`. This is where our model classes will be defined.
+Сначала поместите "cd" в каталог "netbox_access_lists" и создайте файл с именем `models.py`. Именно здесь будут определены наши классы моделей.
 
 ```bash
 $ cd netbox_access_lists
 $ edit models.py
 ```
 
-At the top of the file, import Django's `models` library and NetBox's `NetBoxModel` class. The latter will serve as the base class for our plugin's models. We'll also import the PostgreSQL `ArrayField`; more on this in a bit.
+В верхней части файла импортируйте библиотеку Django `models` и класс Netbox `NetBoxModel`. Последний будет служить базовым классом для моделей нашего плагина. Мы также импортируем PostgreSQL `arrayField`; подробнее об этом чуть позже.
 
 ```python
 from django.contrib.postgres.fields import ArrayField
@@ -21,14 +21,14 @@ from django.db import models
 from netbox.models import NetBoxModel
 ```
 
-We'll create two models:
+Мы создадим две модели:
 
-* `AccessList`: This will represent an access list, with a name and one or more rules assigned to it.
-* `AccessListRule`: This will be an individual rule with source/destination IP addresses, port numbers, etc. assigned to an access list.
+* `AccessList`: Это будет представлять собой список доступа с именем и одним или несколькими назначенными ему правилами.
+* `AccessListRule`:  Это будет индивидуальное правило с IP-адресами источника/назначения, номерами портов и т.д., назначенными списку доступа.
 
 ### AccessList
 
-We'll need to define a few fields for our model. Each model gets a numeric primary key field (`id`) automatically, so we don't need to worry about that, but we do need to define fields for the ACL's name, default action, and optional comments.
+Нам нужно будет определить несколько полей для нашей модели. Каждая модель автоматически получает числовое поле первичного ключа (`id`), поэтому нам не нужно беспокоиться об этом, но нам нужно определить поля для имени ACL, действия по умолчанию и необязательных комментариев.
 
 ```python
 class AccessList(NetBoxModel):
@@ -43,14 +43,14 @@ class AccessList(NetBoxModel):
     )
 ```
 
-By default, model instances are ordered by their primary keys, but it would make more sense to order access lists by name. We can do that by creating a `Meta` child class and defining an `ordering` variable. (Be sure to create the `Meta` class *inside* `AccessList`, not after it.)
+По умолчанию экземпляры модели упорядочены по их первичным ключам, но было бы разумнее упорядочить списки доступа по имени. Мы можем сделать это, создав дочерний класс `Meta` и определив переменную `ordering`. (Обязательно создайте класс `Meta` *внутри* `AccessList`, а не после него.)
 
 ```python
     class Meta:
         ordering = ('name',)
 ```
 
-Finally, we'll add a `__str__()` method to control how an instance is coerced to a string. We'll have this return the value of the instance's `name` field. (Again, be sure to create this method *inside* the `AccessList` class.)
+Наконец, мы добавим метод `__str__()` для управления тем, как экземпляр преобразуется в строку. У нас будет это возвращающее значение поля `name` экземпляра. (Опять же, обязательно создайте этот метод *внутри* класса `AccessList`.)
 
 ```python
     def __str__(self):
@@ -59,19 +59,19 @@ Finally, we'll add a `__str__()` method to control how an instance is coerced to
 
 ### AccessListRule
 
-Our second model will hold the individual rules assigned to each access list. This model will be a bit more complex. We'll need to define fields for all of the following:
+Наша вторая модель будет содержать индивидуальные правила, назначенные каждому списку доступа. Эта модель будет немного сложнее. Нам нужно будет определить поля для всего следующего:
 
-* Parent access list (a foreign key to an `AccessList` instance)
-* Index (the rule's order in the list)
-* Protocol
-* Source prefix
-* Source port(s)
-* Destination prefix
-* Destination port(s)
-* Action (permit, allow, or reject)
-* Description (optional)
+* Родительский список доступа (внешний ключ к экземпляру `AccessList`)
+* Индекс (порядок следования правил в списке)
+* Протокол
+* Префикс источника
+* Порт(ы) источника
+* Префикс назначения
+* Порт(ы) назначения
+* Действие (разрешить, не допускать или отклонить)
+* Описание (необязательно)
 
-Let's start by defining a `ForeignKey` field pointing to the `AccessList` model.
+Давайте начнем с определения поля "ForeignKey", указывающего на модель `AccessList`.
 
 ```python
 class AccessListRule(NetBoxModel):
@@ -82,19 +82,19 @@ class AccessListRule(NetBoxModel):
     )
 ```
 
-We're passing three keyword arguments to the field:
+Мы передаем в поле три аргумента ключевого слова:
 
-* `to` references the related model class
-* `on_delete` tells Django what action to take if the related object is deleted. `CASCADE` will automatically delete any rules assigned to a deleted access list.
-* `related_name` defines the attribute of the reverse relationship being added to the related class. The rules assigned to an `AccessList` instance can be referenced as `accesslist.rules.all()`.
+* `to` ссылается на соответствующий класс модели
+* `on_delete` сообщает Django, какое действие следует предпринять, если связанный объект удален. `CASCADE` автоматически удалит все правила, назначенные удаленному списку доступа.
+* `related_name` определяет атрибут обратной связи, добавляемый к связанному классу. На правила, назначенные экземпляру `AccessList`, можно ссылаться как на `access list.rules.all()`.
 
-Next we'll add an `index` field to store the rule's number (position) within the access list. We'll use `PositiveIntegerField` because only positive numbers are supported.
+Далее мы добавим поле `индекс` для хранения номера правила (позиции) в списке доступа. Мы будем использовать `PositiveIntegerField`, потому что поддерживаются только положительные числа.
 
 ```python
     index = models.PositiveIntegerField()
 ```
 
-The protocol field is next. This will store the name of a protocol such as TCP or UDP. Notice that we're setting `blank=True` because it should not be required to specify a particular protocol when creating a rule.
+Поле протокол находится рядом. Здесь будет сохранено имя протокола, такого как TCP или UDP. Обратите внимание, что мы устанавливаем `blank=True`, потому что при создании правила не должно требоваться указывать конкретный протокол.
 
 ```python
     protocol = models.CharField(
@@ -103,7 +103,7 @@ The protocol field is next. This will store the name of a protocol such as TCP o
     )
 ```
 
-Next we need to define a source prefix. We're going to use a foreign key field to reference an instance of NetBox's `Prefix` model within its `ipam` app. Instead of importing the model class, we can instead reference it by name. And because we want this to be an _optional_ field, we'll also set `blank=True` and `null=True`.
+Далее нам нужно определить исходный префикс. Мы собираемся использовать поле внешнего ключа для ссылки на экземпляр модели NetBox `Prefix` в приложении `ipam`. Вместо импорта класса model мы можем вместо этого ссылаться на него по имени. И поскольку мы хотим, чтобы это было _опциональное_ поле, мы также установим `blank=True` и `null=True`.
 
 ```python
     source_prefix = models.ForeignKey(
@@ -114,12 +114,11 @@ Next we need to define a source prefix. We're going to use a foreign key field t
         null=True
     )
 ```
+:green_circle: **Совет:** В то время как `CASCADE` автоматически удаляет дочерние объекты, `PROTECT` предотвращает удаление родительского параметра, если существуют какие-либо дочерние объекты.
 
-:green_circle: **Tip:** Whereas `CASCADE` automatically deletes child objects, `PROTECT` prevents the deletion of the parent option if any child objects exist.
+Обратите внимание выше, что мы определили `related_name='+'`. Это говорит Django не создавать обратную связь от модели `Prefix` к модели `AccessListRule`, потому что это было бы не очень полезно.
 
-Notice above that we've defined `related_name='+'`. This tells Django not to create a reverse relationship from the `Prefix` model to the `AccessListRule` model, because it wouldn't be very useful.
-
-We also need to add a field for the source port number(s). We could use an integer field for this, however that would limit us to defining a single source port per rule. Instead, we can add an `ArrayField` to store a list of `PositiveIntegerField` values. Like `source_prefix`, this will also be an optional field, so we add `blank=True` and `null=True` as well.
+Нам также нужно добавить поле для номера(ов) порта источника. Мы могли бы использовать для этого целочисленное поле, однако это ограничило бы нас определением одного исходного порта для каждого правила. Вместо этого мы можем добавить `arrayField` для хранения списка значений `PositiveIntegerField`. Как и `source_prefix`, это также будет необязательным полем, поэтому мы также добавим `blank=True` и `null=True`.
 
 ```python
     source_ports = ArrayField(
@@ -129,7 +128,7 @@ We also need to add a field for the source port number(s). We could use an integ
     )
 ```
 
-Let's go ahead an add destination prefix and port fields as well. These are essentially duplicates of our source fields.
+Давайте также добавим поля префикса назначения и порта. По сути, это дубликаты наших исходных полей.
 
 ```python
     destination_prefix = models.ForeignKey(
@@ -146,7 +145,7 @@ Let's go ahead an add destination prefix and port fields as well. These are esse
     )
 ```
 
-Finally, we'll add fields for the rule's action and description. The action is required but a description is not.
+Наконец, мы добавим поля для действия и описания правила. Действие обязательно, а описание - нет.
 
 ```python
     action = models.CharField(
@@ -158,7 +157,7 @@ Finally, we'll add fields for the rule's action and description. The action is r
     )
 ```
 
-With our fields out of the way, this model will also need a `Meta` class to define database ordering and to ensure that every rule has a unique index number within its parent access list.
+Поскольку наши поля удалены, этой модели также потребуется класс `Meta` для определения порядка в базе данных и для обеспечения того, чтобы каждое правило имело уникальный индексный номер в своем родительском списке доступа.
 
 ```python
     class Meta:
@@ -166,28 +165,28 @@ With our fields out of the way, this model will also need a `Meta` class to defi
         unique_together = ('access_list', 'index')
 ```
 
-Finally, we'll add a `__str__()` method to display the parent access list and index number when rendering an `AccessListRule` instance as a string:
+Наконец, мы добавим метод `__str__()` для отображения родительского списка доступа и номера индекса при отображении экземпляра `AccessListRule` в виде строки:
 
 ```python
     def __str__(self):
         return f'{self.access_list}: Rule {self.index}'
 ```
 
-## Define Field Choices
+## Определите варианты полей
 
-Looking back at our models, we see a few fields that would benefit from having pre-defined choices from which a user can select when creating or modifying an instance. Specifically, we expect a rule's `action` field to only ever have one of three values:
+Оглядываясь назад на наши модели, мы видим несколько полей, которые выиграли бы от наличия заранее определенных вариантов, из которых пользователь может выбирать при создании или изменении экземпляра. В частности, мы ожидаем, что поле `действие` правила всегда будет иметь только одно из трех значений:
 
 * Permit
 * Deny
 * Reject
 
-We can define a `ChoiceSet` to store these pre-defined values for the user, to avoid the hassle of manually typing the name of the desired action each time. Back at the top of `models.py`, import NetBox's `ChoiceSet` class:
+Мы можем определить набор выбора для хранения этих предопределенных значений для пользователя, чтобы избежать необходимости каждый раз вручную вводить название желаемого действия. Вернемся к началу `models.py`, импортируем класс NetBox `ChoiceSet`:
 
 ```python
 from utilities.choices import ChoiceSet
 ```
 
-Then, below the import statements but above the model definitions, create a child class named `ActionChoices`:
+Затем, под инструкциями импорта, но над определениями модели, создайте дочерний класс `ActionChoices`:
 
 ```python
 class ActionChoices(ChoiceSet):
@@ -200,15 +199,15 @@ class ActionChoices(ChoiceSet):
     ]
 ```
 
-The `CHOICES` attribute must be an iterable of two- or three-value tuples, each of which defines the following:
+Атрибут `CHOICES` должен быть повторяемым из кортежей с двумя или тремя значениями, каждый из которых определяет следующее:
 
-* The raw value to be stored in the database
-* A human-friendly string for display
-* A color for display in the UI (optional, see [available colors](https://docs.netbox.dev/en/stable/configuration/data-validation/#field_choices))
+* Исходное значение, которое будет сохранено в базе данных
+* Удобная для пользователя строка для отображения
+* Цвет для отображения в пользовательском интерфейсе (необязательно, смотрите [доступные цвета](https://docs.netbox.dev/en/stable/configuration/data-validation/#field_choices))
 
-Additionally, we've added a `key` attribute: This will allow the NetBox administrator to replace or extend the plugin's default choices via NetBox's [`FIELD_CHOICES`](https://netbox.readthedocs.io/en/stable/configuration/optional-settings/#field_choices) configuration parameter.
+Кроме того, мы добавили атрибут `ключ`: это позволит администратору NetBox заменить или расширить параметры плагина по умолчанию с помощью NetBox [`FIELD_CHOICES`](https://netbox.readthedocs.io/en/stable/configuration/optional-settings/#field_choices ) параметра конфигурации.
 
-Now, we can reference this as the set of valid choices on the `default_action` and `action` model fields by passing it as the `choices` keyword argument.
+Теперь мы можем сослаться на это как на набор допустимых вариантов в полях модели `default_action` и `action`, передав его в качестве аргумента ключевого слова `choices`.
 
 ```python
     # AccessList
@@ -224,7 +223,7 @@ Now, we can reference this as the set of valid choices on the `default_action` a
     )
 ```
 
-Let's create a set of choices for a rule's `protocol` field as well. Add this below the `ActionChoices` class:
+Давайте также создадим набор вариантов для поля `протокол` правила. Добавьте это под классом ActionChoices:
 
 ```python
 class ProtocolChoices(ChoiceSet):
@@ -236,7 +235,7 @@ class ProtocolChoices(ChoiceSet):
     ]
 ```
 
-Then, add the `choices` keyword argument to the `protocol` field:
+Затем добавьте аргумент ключевого слова `choices` в поле `protocol`:
 
 ```python
     # AccessListRule
@@ -247,11 +246,11 @@ Then, add the `choices` keyword argument to the `protocol` field:
     )
 ```
 
-### Add Choice Color Methods
+### Добавьте методы выбора цвета
 
-Now that we've defined choices for some of our model fields, we'll need to provide a method for returning the appropriate color for a selected choice. This works similar to Django's `get_FOO_display()` methods, but returns a color (defined on the field's `ChoiceSet`) rather than a label. This method will be called e.g. when displaying the field in a table.
+Теперь, когда мы определили варианты выбора для некоторых полей нашей модели, нам нужно будет предоставить метод возврата соответствующего цвета для выбранного варианта. Это работает аналогично методам Django `get_FOO_display()`, но возвращает цвет (определенный в поле `ChoiceSet`), а не метку. Этот метод будет вызван, например, при отображении поля в таблице.
 
-Let's add a `get_default_action_color()` method on `AccessList`:
+Давайте добавим метод `get_default_action_color()` в `AccessList`:
 
 ```python
 class AccessList(NetBoxModel):
@@ -260,7 +259,7 @@ class AccessList(NetBoxModel):
         return ActionChoices.colors.get(self.default_action)
 ```
 
-We also need to add methods for `protocol` and `action` on `AccessListRule`:
+Нам также нужно добавить методы для `протокола` и `действия` в `AccessListRule`:
 
 ```python
 class AccessListRule(NetBoxModel):
@@ -272,11 +271,11 @@ class AccessListRule(NetBoxModel):
         return ActionChoices.colors.get(self.action)
 ```
 
-## Create Schema Migrations
+## Создание миграций схем
 
-Now that we have our models defined, we need to generate a schema for the PostgreSQL database. While it's possible to create the tables and constraints by hand, it's _much_ easier to employ Django's [migrations feature](https://docs.djangoproject.com/en/4.0/topics/migrations/). This will inspect our model classes and generate the necessary migration files automatically. This is a two-step process: First we generate the migration file with the `makemigrations` management command, then we run `migrate` to apply it to the live database.
+Теперь, когда мы определили наши модели, нам нужно сгенерировать схему для базы данных PostgreSQL. Хотя таблицы и ограничения можно создавать вручную, гораздо проще использовать [функцию миграции](https://docs.djangoproject.com/en/4.0/topics/migrations/) Django. Это проверит наши классы моделей и автоматически сгенерирует необходимые файлы миграции. Это двухэтапный процесс: сначала мы генерируем файл миграции с помощью команды управления `makemigrations`, затем запускаем `migrate`, чтобы применить его к действующей базе данных.
 
-:warning: **Warning:** Before continuing, check that you've set `DEVELOPER=True` in NetBox's `configuration.py` file. This is necessary to disable a safeguard intended to prevent people from creating new migrations mistakenly.
+:warning: **Предупреждение:** Прежде чем продолжить, убедитесь, что вы установили `DEVELOPER=True` в конфигурации NetBox.файл py`. Это необходимо для отключения средства защиты, предназначенного для предотвращения ошибочного создания пользователями новых миграций.
 
 ### Generate Migration Files
 
