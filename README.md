@@ -31,11 +31,7 @@
 
 * [NetBox Plugin Development Documentation](https://netbox.readthedocs.io/en/stable/plugins/development/)
 
-### Getting Help
+### Получение помощи
 
-If you run into any snags working through the tutorial, please join us in the **#netbox** channel on the [NetDev Community Slack](https://netdev.chat/) for help.
-
-### Feedback and Issues
-
-If you happen to uncover an error or discrepancy in the tutorial, please be sure to [open an issue](https://github.com/netbox-community/netbox-plugin-tutorial/issues/new/choose) so that it can be documented and fixed.
+Если вы столкнетесь с какими-либо трудностями при работе с руководством, пожалуйста, присоединяйтесь к каналу **#netbox ** в [NetDev Community Slack].(https://netdev.chat /) за помощью.
 
