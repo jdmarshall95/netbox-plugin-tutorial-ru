@@ -1,28 +1,28 @@
-# Step 4: Forms
+# Шаг 4: Формы
 
-Form classes generate HTML form elements for the user interface, and process and validate user input. They are used in NetBox primarily to create, modify, and delete objects. We'll create a form class for each of our plugin's models.
+Классы форм генерируют HTML-элементы формы для пользовательского интерфейса, а также обрабатывают и проверяют вводимые пользователем данные. Они используются в NetBox в основном для создания, изменения и удаления объектов. Мы создадим класс form для каждой из наших моделей плагинов.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step03-tables`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout step03-таблицы`.
 
-## Create the Forms
+## Создайте формы
 
-Begin by creating a file named `forms.py` in the `netbox_access_lists/` directory.
+Начните с создания файла с именем `forms.py` в каталоге `netbox_access_lists/`.
 
 ```bash
 $ cd netbox_access_lists/
 $ edit forms.py
 ```
 
-At the top of the file, we'll import NetBox's `NetBoxModelForm` class, which will serve as the base class for our forms. We'll also import our plugin's models.
+В верхней части файла будет импортирован класс NetBox `NetBoxModelForm`, который будет служить базовым классом для наших форм. Мы также импортируем модели нашего плагина.
 
 ```python
 from netbox.forms import NetBoxModelForm
 from .models import AccessList, AccessListRule
 ```
 
-### AccessListForm
+### Форма списка доступа
 
-Create a class named `AccessListForm`, subclassing `NetBoxModelForm`. Under this class, define a `Meta` subclass defining the form's `model` and `fields`. Notice that the `fields` list also includes `tags`: Tag assignment is handled by `NetBoxModel` automatically, so we didn't need to add it to our model in step two.
+Создайте класс с именем `AccessListForm`, подкласс `NetBoxModelForm`. В рамках этого класса определите подкласс `Мета`, определяющий `модель` и `поля` формы. Обратите внимание, что список "поля" также включает `теги`: назначение тегов обрабатывается "NetBoxModel" автоматически, поэтому нам не нужно было добавлять его в нашу модель на втором шаге.
 
 ```python
 class AccessListForm(NetBoxModelForm):
@@ -32,7 +32,7 @@ class AccessListForm(NetBoxModelForm):
         fields = ('name', 'default_action', 'comments', 'tags')
 ```
 
-This alone is sufficient for our first model, but we can make one tweak: Instead of the default field that Django will generate for the `comments` model field, we can use NetBox's purpose-built `CommentField` class. (This handles some largely cosmetic details like setting a `help_text` and adjusting the field's layout.) To do this, simply import the `CommentField` class and override the form field:
+Одного этого достаточно для нашей первой модели, но мы можем внести одну поправку: вместо поля по умолчанию, которое Django сгенерирует для поля модели `комментарии`, мы можем использовать специально созданный класс `CommentField` NetBox. (Это обрабатывает некоторые в основном косметические детали, такие как установка `help_text` и настройка макета поля.) Чтобы сделать это, просто импортируйте класс `CommentField` и переопределите поле формы:
 
 ```python
 from utilities.forms.fields import CommentField
@@ -47,7 +47,7 @@ class AccessListForm(NetBoxModelForm):
 
 ### AccessListRuleForm
 
-We'll create a form for `AccessListRule` following the same pattern.
+Мы создадим форму для `AccessListRule` по тому же шаблону.
 
 ```python
 class AccessListRuleForm(NetBoxModelForm):
@@ -60,13 +60,13 @@ class AccessListRuleForm(NetBoxModelForm):
         )
 ```
 
-By default, Django will create a "static" foreign key field for related objects. This renders as a dropdown list that's pre-populated with _all_ available objects. As you can imagine, in a NetBox instance with many thousands of objects this can get rather unwieldy.
+По умолчанию Django создаст "статическое" поле внешнего ключа для связанных объектов. Это отображается в виде выпадающего списка, который предварительно заполнен _всеми_ доступными объектами. Как вы можете себе представить, в экземпляре NetBox со многими тысячами объектов это может стать довольно громоздким.
 
-To avoid this, NetBox provides the `DynamicModelChoiceField` class. This renders foreign key fields using a special dynamic widget backed by NetBox's REST API. This avoids the overhead imposed by the static field, and allows the user to conveniently search for the desired object.
+Чтобы избежать этого, NetBox предоставляет класс `DynamicModelChoiceField`. Это отображает поля внешнего ключа с помощью специального динамического виджета, поддерживаемого REST API NetBox. Это позволяет избежать накладных расходов, связанных со статическим полем, и позволяет пользователю удобно осуществлять поиск нужного объекта.
 
-:green_circle: **Tip:** The `DynamicModelMultipleChoiceField` class is also available for many-to-many fields, which support the assignment of multiple objects.
+:green_circle: **Совет:** Класс `DynamicModelMultipleChoiceField` также доступен для полей типа "многие ко многим", которые поддерживают назначение нескольких объектов.
 
-We'll use `DynamicModelChoiceField` for the three foreign key fields in our form: `access_list`, `source_prefix`, and `destination_prefix`. First, we must import the field class, as well as the models of the related objects. `AccessList` is already imported, so we just need to import `Prefix` from NetBox's `ipam` app. The beginning of `forms.py` should now look like this:
+Мы будем использовать `DynamicModelChoiceField` для трех полей внешнего ключа в нашей форме: `access_list`, `source_prefix` и `destination_prefix`. Во-первых, мы должны импортировать класс field, а также модели связанных объектов. `Список доступа` уже импортирован, поэтому нам просто нужно импортировать `Префикс` из приложения NetBox `ipam`. Начало `forms.py` теперь должно выглядеть следующим образом:
 
 ```python
 from ipam.models import Prefix
@@ -75,7 +75,7 @@ from utilities.forms.fields import CommentField, DynamicModelChoiceField
 from .models import AccessList, AccessListRule
 ```
 
-Then, we override the three relevant fields on the form class, instantiating `DynamicModelChoiceField` with the appropriate `queryset` value for each. (Be sure to keep in place the `Meta` class we already defined.)
+Затем мы переопределяем три соответствующих поля в классе form, создавая экземпляр `DynamicModelChoiceField` с соответствующим значением `queryset` для каждого. (Обязательно сохраните на месте класс `Meta`, который мы уже определили.)
 
 ```python
 class AccessListRuleForm(NetBoxModelForm):
@@ -89,12 +89,11 @@ class AccessListRuleForm(NetBoxModelForm):
         queryset=Prefix.objects.all()
     )
 ```
-
-With our models, tables, and forms all in place, next we'll create some views to bring everything together!
+Теперь, когда все наши модели, таблицы и формы на месте, мы создадим несколько представлений, чтобы свести все воедино!
 
 <div align="center">
 
-:arrow_left: [Step 3: Tables](/tutorial/step03-tables.md) | [Step 5: Views](/tutorial/step05-views.md) :arrow_right:
+:arrow_left: [Шаг 3: Таблицы](/tutorial/step03-tables.md) | [Шаг 5: Представления](/tutorial/step05-views.md) :arrow_right:
 
 </div>
 
