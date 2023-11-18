@@ -277,9 +277,9 @@ class AccessListRule(NetBoxModel):
 
 :warning: **Предупреждение:** Прежде чем продолжить, убедитесь, что вы установили `DEVELOPER=True` в конфигурации NetBox.файл py`. Это необходимо для отключения средства защиты, предназначенного для предотвращения ошибочного создания пользователями новых миграций.
 
-### Generate Migration Files
+### Создание файлов миграции
 
-Change into the NetBox installation root to run `manage.py`. First, we'll run `makemigrations` with the `--dry-run` argument as a sanity-check. This will report what changes have been detected, but won't actually generate any migration files.
+Перейдите в корневой каталог установки NetBox и запустите `manage.py`. Сначала мы запустим `makemigrations` с аргументом `--dry-run` в качестве проверки работоспособности. Это сообщит о том, какие изменения были обнаружены, но на самом деле не создаст никаких файлов миграции.
 
 ```bash
 $ python netbox/manage.py makemigrations netbox_access_lists --dry-run
@@ -289,7 +289,7 @@ Migrations for 'netbox_access_lists':
     - Create model AccessListRule
 ```
 
-We should see a plan to create our plugin's first migration file, `0001_initial.py`, with the two models we defined in `models.py`. (If you encounter an error at this point, or don't see the output above, **stop here** and review your work.) If everything looks good, proceed with creating the migration file (omitting the `--dry-run` argument):
+Мы должны увидеть план создания первого файла миграции нашего плагина, `0001_initial.py`, с двумя моделями, которые мы определили в `models.py`. (Если на этом этапе вы столкнулись с ошибкой или не видите приведенный выше вывод, ** остановитесь здесь ** и просмотрите свою работу.) Если все выглядит хорошо, приступайте к созданию файла миграции (опуская аргумент `--dry-run`).:
 
 ```bash
 $ python netbox/manage.py makemigrations netbox_access_lists
@@ -299,7 +299,7 @@ Migrations for 'netbox_access_lists':
     - Create model AccessListRule
 ```
 
-Back in your plugin workspace, you should now see a `migrations` directory with two files: `__init__.py` and `0001_initial.py`.
+Вернувшись в рабочее пространство вашего плагина, вы теперь должны увидеть каталог "миграции" с двумя файлами: "__init__.py` и `0001_initial.py`.
 
 ```bash
 $ tree
@@ -311,9 +311,9 @@ $ tree
 ...
 ```
 
-### Apply Migrations
+### Применение миграции
 
-Finally, we can apply the migration file using the `migrate` management command:
+Наконец, мы можем применить файл миграции, используя команду управления `migrate`:
 
 ```bash
 $ python netbox/manage.py migrate
@@ -323,7 +323,7 @@ Running migrations:
   Applying netbox_access_lists.0001_initial... OK
 ```
 
-If you're curious, you can inspect the newly created database tables, using the `dbshell` management command to enter a PostgreSQL shell:
+Если вам интересно, вы можете просмотреть вновь созданные таблицы базы данных, используя команду управления `dbshell` для входа в оболочку PostgreSQL:
 
 ```bash
 $ python netbox/manage.py dbshell
@@ -348,11 +348,11 @@ Referenced by:
     TABLE "netbox_access_lists_accesslistrule" CONSTRAINT "netbox_access_lists__access_list_id_6c1b0317_fk_netbox_ac" FOREIGN KEY (access_list_id) REFERENCES netbox_access_lists_accesslist(id) DEFERRABLE INITIALLY DEFERRED
 ```
 
-Type `\q` to exit `dbshell`.
+Введите `\q`, чтобы выйти из `dbshell`.
 
-## Create Some Objects
+## Создайте несколько объектов
 
-Now that we have our models installed, let's try creating some objects. First, enter the NetBox shell. This is an interactive Python command line interface which allows us to interact directly with NetBox objects and other resources.
+Теперь, когда у нас установлены наши модели, давайте попробуем создать несколько объектов. Сначала войдите в оболочку NetBox. Это интерактивный интерфейс командной строки Python, который позволяет нам напрямую взаимодействовать с объектами NetBox и другими ресурсами
 
 ```bash
 $ python netbox/manage.py nbshell
@@ -362,7 +362,7 @@ from netbox### NetBox interactive shell
 >>>
 ```
 
-Let's create and save an access list:
+Давайте создадим и сохраним список доступа:
 
 ```python
 >>> from netbox_access_lists.models import *
@@ -372,7 +372,7 @@ Let's create and save an access list:
 >>> acl.save()
 ```
 
-Next we'll create some prefixes to reference in rules:
+Далее мы создадим несколько префиксов, на которые будем ссылаться в правилах:
 
 ```python
 >>> prefix1 = Prefix(prefix='192.168.1.0/24')
@@ -381,7 +381,7 @@ Next we'll create some prefixes to reference in rules:
 >>> prefix2.save()
 ```
 
-And finally we'll create a couple rules for our access list:
+И, наконец, мы создадим пару правил для нашего списка доступа:
 
 ```python
 >>> AccessListRule(
@@ -406,11 +406,11 @@ And finally we'll create a couple rules for our access list:
 <RestrictedQuerySet [<AccessListRule: MyACL1: Rule 10>, <AccessListRule: MyACL1: Rule 20>]>
 ```
 
-Excellent! We can now create access lists and rules in the database. The next few steps will work on exposing this functionality in the NetBox user interface.
+Превосходно! Теперь мы можем создавать списки доступа и правила в базе данных. Следующие несколько шагов будут посвящены раскрытию этой функциональности в пользовательском интерфейсе NetBox.
 
 <div align="center">
 
-:arrow_left: [Step 1: Initial Setup](/tutorial/step01-initial-setup.md) | [Step 3: Tables](/tutorial/step03-tables.md) :arrow_right:
+:arrow_left: [Шаг 1: Первоначальная настройка](/tutorial/step01-initial-setup.md) | [Шаг 3: Таблицы](/tutorial/step03-tables.md) :arrow_right:
 
 </div>
 
