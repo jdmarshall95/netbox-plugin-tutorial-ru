@@ -153,7 +153,7 @@ $ python netbox/manage.py runserver
 
 <div align="center">
 
-[Шаг 2: Models](/tutorial/step02-models.md) :arrow_right:
+[Шаг 2: Модели](/tutorial/step02-models.md) :arrow_right:
 
 </div>
 
