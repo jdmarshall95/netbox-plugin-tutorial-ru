@@ -5,7 +5,7 @@
 ## Настройка среды разработки
 Для разработки понадобится следующий набор ПО:
 * Виртуализация [VirtualBox](https://www.virtualbox.org/) (или любая другая привычная вам)
-* Любой редактор или среда разработки, имеющая плагин/функционал работы с git репозиториями ([Atom](https://github.com/atom/atom),[Sublime Text](http://www.sublimetext.com/3),[PyCharm](https://www.jetbrains.com/pycharm/download/?section=windows))
+* Любой редактор или среда разработки, имеющая плагин/функционал работы с git репозиториями ([Atom](https://github.com/atom/atom), [Sublime Text](http://www.sublimetext.com/3), [PyCharm](https://www.jetbrains.com/pycharm/download/?section=windows))
 * Удобные инструменты командной строки (не обязательно), например [Git for Windows](https://gitforwindows.org/) содержит Git BASH
 * Образ [Ubuntu 22.04](https://releases.ubuntu.com/22.04.3/ubuntu-22.04.3-live-server-amd64.iso?_ga=2.222831643.1000254876.1700472990-1157606760.1700472990) или [CentOS](http://isoredirect.centos.org/centos/7/isos/x86_64/)
 
