@@ -15,17 +15,17 @@
 
 ### Оглавление
 
-* [Шаг 1: Initial Setup](/tutorial/step01-initial-setup.md) :arrow_left: Начать здесь!
-* [Шаг 2: Models](/tutorial/step02-models.md)
-* [Шаг 3: Tables](/tutorial/step03-tables.md)
-* [Шаг 4: Forms](/tutorial/step04-forms.md)
-* [Шаг 5: Views](/tutorial/step05-views.md)
-* [Шаг 6: Templates](/tutorial/step06-templates.md)
-* [Шаг 7: Navigation](/tutorial/step07-navigation.md)
-* [Шаг 8: Filter Sets](/tutorial/step08-filter-sets.md)
+* [Шаг 1: Предварительная настройка](/tutorial/step01-initial-setup.md) :arrow_left: Начать здесь!
+* [Шаг 2: Модели](/tutorial/step02-models.md)
+* [Шаг 3: Таблицы](/tutorial/step03-tables.md)
+* [Шаг 4: Формы](/tutorial/step04-forms.md)
+* [Шаг 5: Представления](/tutorial/step05-views.md)
+* [Шаг 6: Шаблоны](/tutorial/step06-templates.md)
+* [Шаг 7: Навигация](/tutorial/step07-navigation.md)
+* [Шаг 8: Фильтрация](/tutorial/step08-filter-sets.md)
 * [Шаг 9: REST API](/tutorial/step09-rest-api.md)
 * [Шаг 10: GraphQL API](/tutorial/step10-graphql-api.md)
-* [Шаг 11: Search](/tutorial/step11-search.md)
+* [Шаг 11: Поиск](/tutorial/step11-search.md)
 
 ### Документация
 
