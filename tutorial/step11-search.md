@@ -1,23 +1,23 @@
-# Step 11: NetBox v3.4 Features
+# Шаг 11: Возможности NetBox v3.4
 
-NetBox version 3.4, released in December 2022, introduced a greatly improved global search engine, which includes the ability for plugins to register their own models. In this step, we'll add search indexers for our custom models so that they appear in NetBox's global search results.
+Версия NetBox 3.4, выпущенная в декабре 2022 года, представила значительно улучшенную глобальную поисковую систему, которая включает в себя возможность для плагинов регистрировать свои собственные модели. На этом этапе мы добавим индексаторы поиска для наших пользовательских моделей, чтобы они отображались в результатах глобального поиска NetBox.
 
-:warning: **Warning:** This feature requires NetBox v3.4 or later. If you haven't already, be sure to set `min_version = '3.4.0'` in `NetBoxAccessListsConfig`.
+:warning: **Внимание:** Для этой функции требуется NetBox v3.4 или более поздняя версия. Если вы еще этого не сделали, обязательно установите `min_version = '3.4.0'` в `NetBoxAccessListsConfig`.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step10-graphql`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout Step10-graphql`.
 
-## Create Search Indexes
+## Создание поисковых индексов
 
-Our plugin has two models: `AccessList` and `AccessListRule`. We'd like users to be able to search instances of both models using NetBox's global search feature. To enable this, we need to declare and register a `SearchIndex` subclass for each model.
+Наш плагин имеет две модели: AccessList и AccessListRule. Мы хотели бы, чтобы пользователи могли искать экземпляры обеих моделей, используя функцию глобального поиска NetBox. Чтобы это реализовать, нам нужно объявить и зарегистрировать подкласс SearchIndex для каждой модели.
 
-Begin by creating `search.py` in the plugin's root directory, alongside `models.py`.
+Начните с создания `search.py` в корневом каталоге плагина рядом с `models.py`.
 
 ```bash
 $ cd netbox_access_lists/
 $ edit search.py
 ```
 
-Within this file, we'll import NetBox's `SearchIndex` class as well as our own models. Then, we'll create a subclass of `SearchIndex` for each model:
+В этот файл мы импортируем класс NetBox SearchIndex, а также наши собственные модели. Затем мы создадим подкласс SearchIndex для каждой модели:
 
 ```python
 from netbox.search import SearchIndex
@@ -30,15 +30,15 @@ class AccessListRuleIndex(SearchIndex):
     model = AccessListRule
 ```
 
-There's a bit more to enabling search, though. We also need to tell NetBox which fields to search for each model, and how important each field is (also known as its _precedence_). The latter is accomplished by assigning a numerical weight.
+Однако есть еще кое-что для включения поиска. Нам также нужно указать NetBox, в каких полях искать каждую модель и насколько важно каждое поле (также известное как его _приоритет_). Последнее достигается путем присвоения числового веса.
 
-Consider our `AccessList` model. It has three interesting database fields: `name`, `default_action`, and `comments`. How should we treat these when searching for objects in NetBox? This can be somewhat subjective, but generally we want to assign higher precedence (_lower_ weights) to important fields, and omit fields that we don't care about. If you're unsure what weights to assign, have a look around the core NetBox code base for similar examples.
+Рассмотрим нашу модель AccessList. Он имеет три интересных поля базы данных: «имя», «default_action» и «комментарии». Как нам следует относиться к ним при поиске объектов в NetBox? Это может быть несколько субъективно, но обычно мы хотим назначать более высокий приоритет (_меньший_ вес) важным полям и опускать поля, которые нас не волнуют. Если вы не уверены, какой вес назначить, просмотрите базовый код NetBox и найдите подобные примеры.
 
-* `name`: This is an important field, so we'll give it a high precedence of `100`.
-* `default_action` This is a choice selection field. While very useful for _filtering_, we wouldn't typically expect users to search for these values. We'll exclude this field from the search index.
-* `comments`: It's always recommended to include user comments in the search index, however we'll assign this field a much lower precedence of `5000` as any matches are less likely to be pertinent.
+* `name`: это важное поле, поэтому мы присвоим ему высокий приоритет - `100`.
+* `default_action` Это поле выбора выбора. Хотя это очень полезно для _фильтрации_, мы обычно не ожидаем, что пользователи будут искать эти значения. Мы исключим это поле из индекса поиска.
+* `комментарии`: всегда рекомендуется включать комментарии пользователей в индекс поиска, однако мы назначим этому полю гораздо более низкий приоритет - `5000`, поскольку любые совпадения с меньшей вероятностью будут релевантными.
 
-After selecting our search fields and their precedences, we should have something like this:
+После выбора полей поиска и их приоритета у нас должно получиться что-то вроде этого:
 
 ```python
 class AccessListIndex(SearchIndex):
@@ -55,11 +55,11 @@ class AccessListRuleIndex(SearchIndex):
     )
 ```
 
-Why did we exclude the source and destination parameters from `AccessListRuleIndex`? The source and destination prefixes are related objects, so we want to avoid caching their values locally: If the related object is changed, our cached copy can become outdated. And we omit the source and destination port numbers because matching on common integer values can produce a ton of irrelevant search results. All of these values are better matched using specific filters rather than general purpose search.
+Почему мы исключили параметры источника и назначения из AccessListRuleIndex? Префиксы источника и назначения являются связанными объектами, поэтому мы хотим избежать локального кэширования их значений: если связанный объект будет изменен, наша кэшированная копия может устареть. И мы опускаем номера портов источника и назначения, поскольку сопоставление общих целочисленных значений может привести к множеству нерелевантных результатов поиска. Все эти значения лучше сопоставлять с помощью специальных фильтров, а не поиска общего назначения.
 
-## Register the Indexers
+## Зарегистрируйте индексаторы
 
-Finally, we need to register our indexers so that NetBox knows to run them. At the top of `search.py`, import the `register_search` decorator. Then, use it to wrap both of our index classes:
+Наконец, нам нужно зарегистрировать наши индексаторы, чтобы NetBox мог их запускать. В верхней части `search.py` импортируйте декоратор `register_search`. Затем используйте его, чтобы обернуть оба наших индексных класса:
 
 ```python
 from netbox.search import SearchIndex, register_search
@@ -81,7 +81,7 @@ class AccessListRuleIndex(SearchIndex):
     )
 ```
 
-With our indexers now registered, we can run the `reindex` management command to index any existing objects. (New objects created from this point forward will be registered automatically upon creation.)
+Теперь, когда наши индексаторы зарегистрированы, мы можем запустить команду управления reindex для индексации любых существующих объектов. (Новые объекты, созданные с этого момента, будут автоматически регистрироваться при создании.)
 
 ```
 $ ./manage.py reindex netbox_access_lists
@@ -91,7 +91,7 @@ Indexing models
   netbox_access_lists.accesslistrule... 3 entries cached.
 ```
 
-Now we can search for access lists and rules using NetBox's global search function.
+Теперь мы можем искать списки доступа и правила, используя функцию глобального поиска NetBox.
 
 ![Search results](/images/step11-search-results.png)
 
