@@ -89,11 +89,11 @@ class AccessListRuleForm(NetBoxModelForm):
         queryset=Prefix.objects.all()
     )
 ```
-Теперь, когда все наши модели, таблицы и формы на месте, мы создадим несколько представлений, чтобы свести все воедино!
+Теперь, когда все наши модели, таблицы и формы на месте, мы создадим несколько отображений, чтобы свести все воедино!
 
 <div align="center">
 
-:arrow_left: [Шаг 3: Таблицы](/tutorial/step03-tables.md) | [Шаг 5: Представления](/tutorial/step05-views.md) :arrow_right:
+:arrow_left: [Шаг 3: Таблицы](/tutorial/step03-tables.md) | [Шаг 5: Отображения](/tutorial/step05-views.md) :arrow_right:
 
 </div>
 
