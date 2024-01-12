@@ -1,10 +1,10 @@
 # Step 9: REST API
 
-The REST API enables powerful integration with other systems which exchange data with NetBox. It is powered by the [Django REST Framework](https://www.django-rest-framework.org/) (DRF), which is _not_ a component of Django itself. In this tutorial, we'll see how we can extend NetBox's REST API to serve our plugin.
+REST API обеспечивает мощную интеграцию с другими системами, которые обмениваются данными с NetBox. Он основан на [Django REST Framework](https://www.django-rest-framework.org/) (DRF), который _не_ является компонентом самого Django. В этом уроке мы увидим, как можно расширить REST API NetBox для обслуживания нашего плагина.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step08-filter-sets`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout step08-filter-sets`.
 
-Our API code will live in the `api/` directory under `netbox_access_lists/`. Let's go ahead and create that as well as an `__init__.py` file now:
+Наш код API будет находиться в каталоге `api/` в `netbox_access_lists/`. Давайте продолжим и создадим его, а также файл `__init__.py`:
 
 ```bash
 $ cd netbox_access_lists/
@@ -12,15 +12,15 @@ $ mkdir api
 $ touch api/__init__.py
 ```
 
-## Create Model Serializers
+## Создание сериализаторов моделей
 
-Serializers are somewhat analogous to forms: They control the translation of client data to and from Python objects, while Django itself handles the database abstraction. We need to create a serializer for each of our models. Begin by creating `serializers.py` in the `api/` directory.
+Сериализаторы в чем-то аналогичны формам: они управляют переводом клиентских данных в объекты Python и обратно, в то время как сам Django обрабатывает абстракцию базы данных. Нам нужно создать сериализатор для каждой из наших моделей. Начните с создания файла `serializers.py` в каталоге `api/`.
 
 ```bash
 $ edit api/serializers.py
 ```
 
-At the top of this file, we need to import the `serializers` module from the `rest_framework` library, as well as NetBox's `NetBoxModelSerializer` class and our plugin's own models:
+В верхней части этого файла нам нужно импортировать модуль сериализаторов из библиотеки rest_framework, а также класс NetBoxModelSerializer NetBox и собственные модели нашего плагина:
 
 ```python
 from rest_framework import serializers
@@ -28,10 +28,9 @@ from rest_framework import serializers
 from netbox.api.serializers import NetBoxModelSerializer
 from ..models import AccessList, AccessListRule
 ```
+### Создание сериализатора AccessListSerializer
 
-### Create AccessListSerializer
-
-First, we'll create a serializer for `AccessList`, subclassing `NetBoxModelSerializer`. Much like when creating a model form, we'll create a child `Meta` class under the serializer specifying the associated `model` and the `fields` to be included.
+Сначала мы создадим сериализатор для AccessList, создав подкласс NetBoxModelSerializer. Как и при создании формы модели, мы создадим дочерний класс «Мета» в сериализаторе, указав связанную «модель» и включаемые «поля».
 
 ```python
 class AccessListSerializer(NetBoxModelSerializer):
@@ -44,11 +43,11 @@ class AccessListSerializer(NetBoxModelSerializer):
         )
 ```
 
-It's worth discussing each of the fields we've named above. `id` is the model's primary key; it should always be included with every serializer, as it provides a guaranteed method of uniquely identifying objects. The `display` field is built into `NetBoxModelSerializer`: It is a read-only field which returns a string representation of the object. This is useful for populating form field dropdowns, for instance.
+Стоит обсудить каждую из областей, которые мы назвали выше. `id` — первичный ключ модели; его всегда следует включать в каждый сериализатор, поскольку он обеспечивает гарантированный метод уникальной идентификации объектов. Поле display встроено в NetBoxModelSerializer: это поле, доступное только для чтения, которое возвращает строковое представление объекта. Это полезно, например, для заполнения раскрывающихся списков полей формы.
 
-The `name`, `default_action`, and `comments` fields are declared on the `AccessList` model. `tags` provides access to the object's tag manager, and `custom_fields` includes its custom field data; both of these are provided by `NetBoxModelSerializer`. Finally, the `created` and `last_updated` are read-only fields built into `NetBoxModel`.
+Поля name, default_action и comment объявляются в модели AccessList. `tags` обеспечивает доступ к диспетчеру тегов объекта, а `custom_fields` включает данные его настраиваемого поля; оба они предоставляются NetBoxModelSerializer. Наконец, поля «created» и «last_updated» доступны только для чтения и встроены в NetBoxModel.
 
-Our serializer will inspect the model to generate the necessary fields automatically, however there's one field that we need to add manually. Every serializer should include a read-only `url` field which contains the URL where the object can be reached; think of it as similar to a model's `get_absolute_url()` method. To add this, we'll use DRF's `HyperlinkedIdentityField`. Add it above the `Meta` child class:
+Наш сериализатор проверит модель и автоматически сгенерирует необходимые поля, однако есть одно поле, которое нам нужно добавить вручную. Каждый сериализатор должен включать поле URL только для чтения, содержащее URL-адрес, по которому можно получить доступ к объекту; думайте об этом как о методе модели `get_absolute_url()`. Чтобы добавить это, мы будем использовать HyperlinkedIdentityField из DRF. Добавьте его над дочерним классом Meta:
 
 ```python
 class AccessListSerializer(NetBoxModelSerializer):
@@ -57,17 +56,17 @@ class AccessListSerializer(NetBoxModelSerializer):
     )
 ```
 
-When invoking the field class, we need to specify the appropriate view name. Note that this view doesn't actually exist yet; we'll create it a bit later.
+При вызове класса поля нам необходимо указать соответствующее имя представления. Обратите внимание, что это представление на самом деле еще не существует; мы создадим его чуть позже.
 
-Remember back in step three when we added a table column showing the number of rules assigned to each access list? That was handy. Let's add a serializer field for it too! Add this directly below the `url` field:
+Помните, на третьем этапе мы добавили столбец таблицы, показывающий количество правил, назначенных каждому списку доступа? Это было удобно. Давайте добавим и для него поле сериализатора! Добавьте это прямо под полем URL:
 
 ```python
 rule_count = serializers.IntegerField(read_only=True)
 ```
 
-Just as with the table column, we'll rely on our view (to be defined next) to annotate the rule count for each access list on the underlying queryset.
+Как и в случае со столбцом таблицы, мы будем полагаться на наше представление (которое будет определено далее) для аннотирования количества правил для каждого списка доступа в базовом наборе запросов.
 
-Finally, we need to add both `url` and `rule_count` to `Meta.fields`:
+Наконец, нам нужно добавить URL и Rule_count в Meta.fields:
 
 ```python
     class Meta:
@@ -78,11 +77,11 @@ Finally, we need to add both `url` and `rule_count` to `Meta.fields`:
         )
 ```
 
-:green_circle: **Tip:** The order in which fields are listed determines the order in which they appear in the object's API representation.
+:green_circle: **Совет:** Порядок перечисления полей определяет порядок их появления в представлении API объекта.
 
-### Create AccessListRuleSerializer
+### Создать сериализатор AccessListRuleSerializer
 
-We also need to create a serializer for `AccessListRule`. Add it to `serializers.py` below `AccessListSerializer`. As with the first serializer, we'll add a `Meta` class to define the model and fields, and a `url` field.
+Нам также необходимо создать сериализатор для AccessListRule. Добавьте его в `serializers.py` ниже `AccessListSerializer`. Как и в случае с первым сериализатором, мы добавим класс Meta для определения модели и полей, а также поле URL.
 
 ```python
 class AccessListRuleSerializer(NetBoxModelSerializer):
@@ -99,9 +98,9 @@ class AccessListRuleSerializer(NetBoxModelSerializer):
         )
 ```
 
-There's an additional consideration when referencing related objects in a serializer. By default, the serializer will return only the primary key of the related object; its numeric ID. This requires the client to make additional API requests in order to determine _any_ other information about the related object. It is convenient to include on the serializer some information about the related object, such as its name and URL, automatically. We can do this by using a _nested serializer_.
+При ссылке на связанные объекты в сериализаторе необходимо учитывать дополнительные моменты. По умолчанию сериализатор вернет только первичный ключ связанного объекта; его цифровой идентификатор. Это требует от клиента выполнения дополнительных запросов API, чтобы определить _любую_ другую информацию о связанном объекте. Удобно автоматически включать в сериализатор некоторую информацию о связанном объекте, например его имя и URL-адрес. Мы можем сделать это, используя _вложенный сериализатор_.
 
-For instance, the `source_prefix` and `destination_prefix` fields both reference NetBox's core `ipam.Prefix` model. We can extend `AccessListRuleSerializer` to use NetBox's nested serializer for this model:
+Например, поля «source_prefix» и «destination_prefix» ссылаются на базовую модель NetBox «ipam.Prefix». Мы можем расширить AccessListRuleSerializer, чтобы использовать вложенный сериализатор NetBox для этой модели:
 
 ```python
 from ipam.api.serializers import NestedPrefixSerializer
@@ -112,17 +111,17 @@ class AccessListRuleSerializer(NetBoxModelSerializer):
     destination_prefix = NestedPrefixSerializer()
 ```
 
-Now, our serializer will include an abridged representation of the source and/or destination prefixes for the object. We should do this with the `access_list` field as well, however we'll first need to create a nested serializer for the `AccessList` model.
+Теперь наш сериализатор будет включать сокращенное представление префиксов источника и/или назначения для объекта. Нам следует сделать то же самое и с полем access_list, однако сначала нам нужно создать вложенный сериализатор для модели AccessList.
 
-### Create Nested Serializers
+### Создание вложенных сериализаторов
 
-Begin by importing NetBox's `WritableNestedSerializer` class. This will serve as the base class for our nested serializers.
+Начните с импорта класса NetBox `WritableNestedSerializer`. Он будет служить базовым классом для наших вложенных сериализаторов.
 
 ```python
 from netbox.api.serializers import NetBoxModelSerializer, WritableNestedSerializer
 ```
 
-Then, create two nested serializer classes, one for each of our plugin's models. Each of these will have a `url` field and `Meta` child class like the regular serializers, however the `Meta.fields` attribute for each is limited to a bare minimum of fields: `id`, `url`, `display`, and a supplementary human-friendly identifier. Add these in `serializers.py` _above_ the regular serializers (because we need to define `NestedAccessListSerializer` before we can reference it). 
+Затем создайте два вложенных класса сериализатора, по одному для каждой модели нашего плагина. Каждый из них будет иметь поле `url` и дочерний класс `Meta`, как и обычные сериализаторы, однако атрибут `Meta.fields` для каждого из них ограничен минимальным количеством полей: `id`, `url`, `display `и дополнительный удобный идентификатор. Добавьте их в `serializers.py` _над_ обычными сериализаторами (потому что нам нужно определить `NestedAccessListSerializer`, прежде чем мы сможем ссылаться на него).
 
 ```python
 class NestedAccessListSerializer(WritableNestedSerializer):
@@ -144,7 +143,7 @@ class NestedAccessListRuleSerializer(WritableNestedSerializer):
         fields = ('id', 'url', 'display', 'index')
 ```
 
-Now we can override the `access_list` field on `AccessListRuleSerializer` to use the nested serializer:
+Теперь мы можем переопределить поле access_list в AccessListRuleSerializer, чтобы использовать вложенный сериализатор:
 
 ```python
 class AccessListRuleSerializer(NetBoxModelSerializer):
@@ -156,11 +155,11 @@ class AccessListRuleSerializer(NetBoxModelSerializer):
     destination_prefix = NestedPrefixSerializer()
 ```
 
-## Create the Views
+## Создание отображений
 
-Next, we need to create views to handle the API logic. Just as serializers are roughly analogous to forms, API views work similarly to the UI views that we created in step five. However, because API functionality is highly standardized, view creation is substantially simpler: We generally need only to create a single _view set_ for each model. A view set is a single class that can handle the view, add, change, and delete operations which each require dedicated views under the UI.
+Далее нам нужно создать представления для обработки логики API. Подобно тому, как сериализаторы примерно аналогичны формам, представления API работают аналогично представлениям пользовательского интерфейса, которые мы создали на пятом шаге. Однако, поскольку функциональность API высоко стандартизирована, создание представлений существенно упрощается: обычно нам нужно создать только один _набор_ представлений_ для каждой модели. Набор представлений — это единый класс, который может обрабатывать операции просмотра, добавления, изменения и удаления, каждая из которых требует выделенных представлений в пользовательском интерфейсе.
 
-Start by creating `api/views.py` and importing NetBox's `NetBoxModelViewSet` class, as well as our plugin's `models` and `filtersets` modules, and our serializers.
+Начните с создания `api/views.py` и импорта класса `NetBoxModelViewSet` NetBox, а также модулей `models` и `filtersets` нашего плагина и наших сериализаторов.
 
 ```python
 from netbox.api.viewsets import NetBoxModelViewSet
@@ -169,7 +168,7 @@ from .. import filtersets, models
 from .serializers import AccessListSerializer, AccessListRuleSerializer
 ```
 
-First we'll create a view set for access lists, by inheriting from `NetBoxModelViewSet` and defining its `queryset` and `serializer_class` attributes. (Note that we're prefetching assigned tags for the queryset.)
+Сначала мы создадим набор представлений для списков доступа, унаследовав его от `NetBoxModelViewSet` и определив его атрибуты `queryset` и`serializer_class`. (Обратите внимание, что мы предварительно извлекаем назначенные теги для набора запросов.)
 
 ```python
 class AccessListViewSet(NetBoxModelViewSet):
@@ -177,7 +176,7 @@ class AccessListViewSet(NetBoxModelViewSet):
     serializer_class = AccessListSerializer
 ```
 
-Recall that we added a `rule_count` field to `AccessListSerializer`; let's annotate the queryset appropriately to ensure that field gets populated (just as we did for the table column in step five). Remember to import Django's `Count` utility class.
+Вспомним, что мы добавили поле rule_count в AccessListSerializer; давайте соответствующим образом аннотируем набор запросов, чтобы гарантировать, что поле будет заполнено (так же, как мы это сделали для столбца таблицы на пятом шаге). Не забудьте импортировать служебный класс `Count` Django.
 
 ```python
 from django.db.models import Count
@@ -189,7 +188,7 @@ class AccessListViewSet(NetBoxModelViewSet):
     serializer_class = AccessListSerializer
 ```
 
-Next, we'll add a view set for rules. In addition to `queryset` and `serializer_class`, we'll attach the filter set for this model as `filterset_class`. Note that we're also prefetching all related object fields in addition to tags to improve performance when listing many objects.
+Далее мы добавим набор представлений для правил. В дополнение к `queryset` и `serializer_class` мы прикрепим набор фильтров для этой модели как `filterset_class`. Обратите внимание, что мы также предварительно загружаем все связанные поля объекта в дополнение к тегам, чтобы повысить производительность при перечислении большого количества объектов.
 
 ```python
 class AccessListRuleViewSet(NetBoxModelViewSet):
@@ -200,24 +199,24 @@ class AccessListRuleViewSet(NetBoxModelViewSet):
     filterset_class = filtersets.AccessListRuleFilterSet
 ```
 
-## Create the Endpoint URLs
+## Создание URL-адресов конечных точек
 
-Finally, we'll create our API endpoint URLs. This works a bit differently from UI views: Instead of defining a series of paths, we instantiate a _router_ and register each view set to it.
+Наконец, мы создадим URL-адреса конечных точек API. Это работает немного иначе, чем представления пользовательского интерфейса: вместо определения ряда путей мы создаем экземпляр _router_ и регистрируем для него каждое установленное представление.
 
-Create `api/urls.py` and import NetBox's `NetBoxRouter` and our API views:
+Создайте `api/urls.py` и импортируйте `NetBoxRouter` NetBox и наши представления API:
 
 ```python
 from netbox.api.routers import NetBoxRouter
 from . import views
 ```
 
-Next, we'll define an `app_name`. This will be used to resolve API view names for our plugin.
+Далее мы определим `app_name`. Это будет использоваться для разрешения имен представлений API для нашего плагина.
 
 ```python
 app_name = 'netbox_access_list'
 ```
 
-Then, we create a `NetBoxRouter` instance and register each view with it using our desired URL. These are the endpoints that will be available under `/api/plugins/access-lists/`.
+Затем мы создаем экземпляр NetBoxRouter и регистрируем в нем каждое представление, используя желаемый URL-адрес. Это конечные точки, которые будут доступны в каталоге `/api/plugins/access-lists/`.
 
 ```python
 router = NetBoxRouter()
@@ -225,17 +224,17 @@ router.register('access-lists', views.AccessListViewSet)
 router.register('access-list-rules', views.AccessListRuleViewSet)
 ```
 
-Finally, we expose the router's `urls` attribute as `urlpatterns` so that it will be detected by the plugins framework.
+Наконец, мы раскрываем атрибут `urls` маршрутизатора как `urlpatterns`, чтобы он был обнаружен платформой плагинов.
 
 ```python
 urlpatterns = router.urls
 ```
 
-:green_circle: **Tip:** The base URL for our plugin's REST API endpoints is determined by the `base_url` attribute of the plugin config class that we created in step one.
+:green Circle: **Совет:** Базовый URL-адрес для конечных точек REST API вашего плагина определяется атрибутом `base_url` класса конфигурации плагина, который мы создали на первом этапе.
 
-With all of our REST API components now in place, we should be able to make API requests. (Note that you may first need to provision a token for authentication.) You can quickly verify that our endpoints are working properly by navigating to <http://localhost:8000/api/plugins/access-lists/> in your browser while logged into NetBox. You should see the two available endpoints; clicking on either will return a list of objects.
+Теперь, когда все наши компоненты REST API готовы, мы сможем отправлять запросы API. (Обратите внимание, что сначала вам может потребоваться предоставить токен для аутентификации.) Вы можете быстро убедиться, что наши конечные точки работают правильно, перейдя по адресу <http://localhost:8000/api/plugins/access-lists/> в своем браузере, пока залогинился в NetBox. Вы должны увидеть две доступные конечные точки; нажатие на любой из них вернет список объектов.
 
-:blue_square: **Note:** If the REST API endpoints do not load, try restarting the development server (`manage.py runserver`).
+:blue_square: **Примечание:** Если конечные точки REST API не загружаются, попробуйте перезапустить сервер разработки (`manage.py runserver`).
 
 ![REST API - Root view](/images/step09-rest-api1.png)
 
@@ -243,7 +242,7 @@ With all of our REST API components now in place, we should be able to make API 
 
 <div align="center">
 
-:arrow_left: [Step 8: Filter Sets](/tutorial/step08-filter-sets.md) | [Step 10: GraphQL API](/tutorial/step10-graphql-api.md) :arrow_right:
+:arrow_left: [Step 8: Наборы фильтров](/tutorial/step08-filter-sets.md) | [Step 10: GraphQL API](/tutorial/step10-graphql-api.md) :arrow_right:
 
 </div>
 
