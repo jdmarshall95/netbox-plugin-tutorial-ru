@@ -114,7 +114,7 @@ menu_items = (
 
 <div align="center">
 
-:arrow_left: [Step 6: Шаблоны](/tutorial/step06-templates.md) | [Step 8: Наборы фильтров](/tutorial/step08-filter-sets.md) :arrow_right:
+:arrow_left: [Step 6: Шаблоны](/tutorial/step06-templates.md) | [Step 8: Фильтрация](/tutorial/step08-filter-sets.md) :arrow_right:
 
 </div>
 
