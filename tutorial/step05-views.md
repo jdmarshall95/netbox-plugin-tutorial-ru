@@ -2,7 +2,7 @@
 
 Отображения отвечают за бизнес-логику вашего приложения. Как правило, это означает обработку входящих запросов, выполнение некоторых действий и возврат ответа клиенту. Каждое отображение обычно имеет связанный с ним URL-адрес и может обрабатывать один или несколько типов HTTP-запросов (например, запросы GET и/или POST).
 
-Django предоставляет набор [универсальных классов отображений] (https://docs.djangoproject.com/en/4.0/topics/class-based-views/generic-display/), которые обрабатывают большую часть шаблонного кода, необходимого для обработки запросов. NetBox также предоставляет набор классов отображений, упрощающих создание отображений для создания, редактирования, удаления и просмотра объектов. Они также предоставляют поддержку специфичных для NetBox функций, таких как настраиваемые поля и регистрация изменений.
+Django предоставляет набор [универсальных классов отображений](https://docs.djangoproject.com/en/4.0/topics/class-based-views/generic-display/), которые обрабатывают большую часть шаблонного кода, необходимого для обработки запросов. NetBox также предоставляет набор классов отображений, упрощающих создание отображений для создания, редактирования, удаления и просмотра объектов. Они также предоставляют поддержку специфичных для NetBox функций, таких как настраиваемые поля и регистрация изменений.
 
 На этом этапе мы создадим набор представлений для каждой модели нашего плагина.
 
@@ -17,36 +17,36 @@ $ cd netbox_access_lists/
 $ edit views.py
 ```
 
-We'll need to import our plugin's `models`, `tables`, and `forms` modules: This is where everything we've built so far really comes together! We also need to import NetBox's generic views module, as it provides the base classes for our views.
+Нам нужно будет импортировать модули «модели», «таблицы» и «формы» нашего плагина: именно здесь все, что мы создали на данный момент, действительно объединяется! Нам также необходимо импортировать модуль общих представлений NetBox, поскольку он предоставляет базовые классы для наших отображений.
 
 ```python
 from netbox.views import generic
 from . import forms, models, tables
 ```
 
-:green_circle: **Tip:** You'll notice that we're importing the entire model, form, and tables modules here. If you would prefer to import each of the relevant classes directly, you're certainly welcome to do so; just remember to change the class definitions below accordingly.
+:green_circle: **Совет:** Вы заметите, что мы импортируем сюда все модули модели, формы и таблиц. Если вы предпочитаете импортировать каждый из соответствующих классов напрямую, вы, безусловно, можете это сделать; просто не забудьте соответствующим образом изменить определения классов ниже.
 
-For each model, we need to create four views:
+Для каждой модели нам необходимо создать четыре представления:
 
-* **Detail view** - Display a single object
-* **List view** - Displays a table of all existing instances of a particular model
-* **Edit view** - Handles adding and modifying objects
-* **Delete view** - Handles the deletion of an object
+* **Detail view** - Отображение одного объекта
+* **List view** - Отображает таблицу всех существующих экземпляров конкретной модели.
+* **Edit view** - Управляет добавлением и изменением объектов.
+* **Delete view** - Обрабатывает удаление объекта
 
-### AccessList Views
+### AccessList отображения
 
-The general pattern we'll follow here is to sublass a generic view class provided by NetBox, and define the necessary attributes. We won't need to write any substantial code because the views NetBox provides takes care of the request logic for us.
+Общий шаблон, которому мы здесь будем следовать, заключается в создании подкласса общего класса отображения, предоставляемого NetBox, и определении необходимых атрибутов. Нам не нужно будет писать какой-либо существенный код, поскольку отображения, предоставляемые NetBox, позаботятся о логике запроса за нас.
 
-Let's start with a detail view. We subclass `generic.ObjectView` and define the queryset of objects we want to display.
+Начнем с детального обзора. Мы создаем подкласс «generic.ObjectView» и определяем набор запросов объектов, которые хотим отображать.
 
 ```python
 class AccessListView(generic.ObjectView):
     queryset = models.AccessList.objects.all()
 ```
 
-:green_circle: **Tip:** The views require us to define a queryset rather than just a model, because it's sometimes necessary to modify the queryset, e.g. to prefetch related objects or limit by a particular attribute.
+:green_circle: **Совет:** Отображения требуют от нас определения набора запросов, а не просто модели, поскольку иногда необходимо изменить набор запросов, например. для предварительной выборки связанных объектов или ограничения по определенному атрибуту.
 
-Next, we'll add a list view. For this view, we need to define both `queryset` and `table`.
+Далее мы добавим представление списка. Для этого представления нам нужно определить как «набор запросов», так и «таблицу».
 
 ```python
 class AccessListListView(generic.ObjectListView):
@@ -54,9 +54,9 @@ class AccessListListView(generic.ObjectListView):
     table = tables.AccessListTable
 ```
 
-:green_circle: **Tip:** It occurs to the author that having chosen a model name that ends with "List" might be a bit confusing here. Just remember that `AccessListView` is the _detail_ (single object) view, and `AccessListListView` is the _list_ (multiple objects) view.
+:green_circle: **Совет:** Автору пришло в голову, что выбор названия модели, оканчивающегося на «Список», может немного сбить с толку. Просто помните, что AccessListView — это отображение _detail_ (один объект), а AccessListListView — представление _list_ (несколько объектов).
 
-Before we move on to the next view, do you remember the extra column we added to `AccessListTable` in step three? That column expects to find a count of rules assigned for each access list in the queryset, named `rule_count`. Let's add this to our queryset now. We can employ Django's `Count()` function to extend the SQL query and annotate the count of associated rules. (Don't forget to add the import statement up top.)
+Прежде чем мы перейдем к следующему отображению, помните ли вы дополнительный столбец, который мы добавили в AccessListTable на третьем шаге? В этом столбце ожидается найти количество правил, назначенных для каждого списка доступа в наборе запросов с именем «rule_count». Давайте добавим это в наш набор запросов сейчас. Мы можем использовать функцию Count() в Django, чтобы расширить SQL-запрос и аннотировать количество связанных правил. (Не забудьте добавить оператор импорта вверху.)
 
 ```python
 from django.db.models import Count
@@ -68,7 +68,7 @@ class AccessListListView(generic.ObjectListView):
     table = tables.AccessListTable
 ```
 
-We'll finish up with the edit and delete views for `AccessList`. Note that for the edit view, we also need to define `form` as the form class we created in step four.
+Мы закончим отображением редактирования и удаления для AccessList. Обратите внимание, что для отображения редактирования нам также необходимо определить «форму» как класс формы, который мы создали на четвертом шаге.
 
 ```python
 class AccessListEditView(generic.ObjectEditView):
@@ -79,11 +79,11 @@ class AccessListDeleteView(generic.ObjectDeleteView):
     queryset = models.AccessList.objects.all()
 ```
 
-That's it for the first model! We'll create another four views for `AccessListRule` as well.
+Вот и все для первой модели! Мы также создадим еще четыре отображения для AccessListRule.
 
-### AccessListRule Views
+### AccessListRule отображения
 
-The rest of our views follow the same pattern as the first four.
+Остальные наши отображения следуют той же схеме, что и первые четыре.
 
 ```python
 class AccessListRuleView(generic.ObjectView):
@@ -104,26 +104,26 @@ class AccessListRuleDeleteView(generic.ObjectDeleteView):
     queryset = models.AccessListRule.objects.all()
 ```
 
-With our views in place, we now need to make them accessible by associating each with a URL.
+Теперь, когда наши отображения готовы, нам нужно сделать их доступными, связав каждое из них с URL-адресом.
 
-## Map Views to URLs
+## Сопоставление отображений с URL-адресами
 
-In the `netbox_access_lists/` directory, create `urls.py`. This will define our view URLs.
+В каталоге netbox_access_lists/ создайте urls.py. Это определит наши URL-адреса просмотра.
 
 ```bash
 $ edit urls.py
 ```
 
-URL mapping for NetBox plugins is pretty much identical to regular Django apps: We'll define `urlpatterns` as an iterable of `path()` calls, mapping URL fragments to view classes.
+Сопоставление URL-адресов для плагинов NetBox во многом идентично обычным приложениям Django: мы определим `urlpatterns` как итерацию вызовов `path()`, сопоставляющую фрагменты URL-адресов для классов отображений.
 
-First we'll need to import Django's `path` function from its `urls` module, as well as our plugin's `models` and `views` modules.
+Сначала нам нужно импортировать функцию «path» Django из его модуля «urls», а также модули «models» и «views» нашего плагина.
 
 ```python
 from django.urls import path
 from . import models, views
 ```
 
-We have four views per model, but we actually need to define five paths for each. This is because the add and edit operations are handled by the same view, but accessed via different URLs. Along with the URL and view for each path, we'll also specify a `name`; this allows us to easily reference a URL in code.
+У нас есть четыре отображения для каждой модели, но на самом деле нам нужно определить пять путей для каждого. Это связано с тем, что операции добавления и редактирования обрабатываются одним и тем же отображением, но доступ к ним осуществляется через разные URL-адреса. Наряду с URL-адресом и отображением для каждого пути мы также укажем «имя»; это позволяет нам легко ссылаться на URL-адрес в коде.
 
 ```python
 urlpatterns = (
@@ -160,12 +160,11 @@ urlpatterns = (
 
 )
 ```
+### Добавление отображений журнала изменений
 
-### Adding Changelog Views
+Возможно, вы помните, что одной из функций NetBox является автоматическое [ведение журнала изменений](https://netbox.readthedocs.io/en/stable/additional-features/change-logging/). Вы можете увидеть это в действии, просматривая объект NetBox и выбирая его вкладку «Журнал изменений». Поскольку наши модели наследуют от NetBoxModel, они тоже могут использовать эту функцию.
 
-You may recall that one of the features provided by NetBox is automatic [change logging](https://netbox.readthedocs.io/en/stable/additional-features/change-logging/). You can see this in action when viewing a NetBox object and selecting its "Changelog" tab. Since our models inherit from `NetBoxModel`, they too can utilize this feature.
-
-We'll add a dedicated changelog URL for each of our models. First, back at the top of `urls.py`, we need to import NetBox's `ObjectChangeLogView`:
+Мы добавим специальный URL-адрес журнала изменений для каждой из наших моделей. Во-первых, вернувшись в начало `urls.py`, нам нужно импортировать `ObjectChangeLogView` NetBox:
 
 ```python
 from netbox.views.generic import ObjectChangeLogView
@@ -191,19 +190,19 @@ urlpatterns = (
 )
 ```
 
-Notice that we're using `ObjectChangeLogView` directly here; we did not need to create model-specific subclasses for it. Additionally, we're passing a keyword argument `model` to the view: This specifies the model to be used (which is why we didn't need to subclass the view).
+Обратите внимание, что здесь мы используем ObjectChangeLogView; нам не нужно было создавать для него подклассы для конкретной модели. Кроме того, мы передаем отображению аргумент ключевого слова «модель»: он определяет модель, которая будет использоваться (именно поэтому нам не нужно было создавать подкласс отображения).
 
-## Add Model URL Methods
+## Добавление методов URL-адреса модели
 
-Now that we have our URL paths in place, we can add a `get_absolute_url()` method to each of our models. The method is a [Django convention](https://docs.djangoproject.com/en/stable/ref/models/instances/#get-absolute-url); although not strictly required, it conveniently returns the absolute URL for any particular object. For example, calling `accesslist.get_absolute_url()` would return `/plugins/access-lists/access-lists/123/` (where 123 is the primary key of the object).
+Теперь, когда у нас есть URL-пути, мы можем добавить метод get_absolute_url() к каждой из наших моделей. Этот метод представляет собой [соглашение Django](https://docs.djangoproject.com/en/stable/ref/models/instances/#get-absolute-url); хотя это и не является строго обязательным, он удобно возвращает абсолютный URL-адрес для любого конкретного объекта. Например, вызов `accesslist.get_absolute_url()` вернет `/plugins/access-lists/access-lists/123/` (где 123 — это первичный ключ объекта).
 
-Back in `models.py`, import Django's `reverse` function from its `urls` module at the top of the file:
+Вернитесь в «models.py», импортируйте функцию «reverse» Django из модуля «urls» в верхней части файла:
 
 ```python
 from django.urls import reverse
 ```
 
-Then, add the `get_absolute_url()` method to the `AccessList` class after its `__str__()` method:
+Затем добавьте метод get_absolute_url() в класс AccessList после его метода __str__():
 
 ```python
 class AccessList(NetBoxModel):
@@ -212,15 +211,15 @@ class AccessList(NetBoxModel):
         return reverse('plugins:netbox_access_lists:accesslist', args=[self.pk])
 ```
 
-`reverse()` takes two arguments here: The view name, and a list of positional arguments. The view name is formed by concatenating three components:
+`reverse()` принимает здесь два аргумента: имя представления и список позиционных аргументов. Имя представления формируется путем объединения трех компонентов:
 
 * The string `'plugins'`
 * The name of our plugin
 * The name of the desired URL path (defined as `name='accesslist'` in `urls.py`)
 
-The object's `pk` attribute is passed as well, and replaces the `<int:pk>` path converter in the URL.
+Атрибут объекта `pk` также передается и заменяет преобразователь пути `<int:pk>` в URL-адресе.
 
-We'll add a `get_absolute_url()` method for `AccessListRule` as well, adjusting the view name accordingly.
+Мы также добавим метод get_absolute_url() для AccessListRule, соответствующим образом изменив имя представления.
 
 ```python
 class AccessListRule(NetBoxModel):
@@ -229,27 +228,27 @@ class AccessListRule(NetBoxModel):
         return reverse('plugins:netbox_access_lists:accesslistrule', args=[self.pk])
 ```
 
-## Test the Views
+## Тестирование отображений
 
-Now for the moment of truth: Has all our work thus far yielded functional UI views? Check that the development server is running, then open a browser and navigate to <http://localhost:8000/plugins/access-lists/access-lists/>. You should see the access list list view and (if you followed in step two) a single access list named MyACL1.
+Теперь момент истины: привела ли вся наша работа к настоящему моменту к функциональным представлениям пользовательского интерфейса? Убедитесь, что сервер разработки запущен, затем откройте браузер и перейдите по адресу <http://localhost:8000/plugins/access-lists/access-lists/>. Вы должны увидеть представление списка списка доступа и (если вы выполнили действия на втором шаге) один список доступа с именем MyACL1.
 
-:blue_square: **Note:** This guide assumes that you're running the Django development server locally on port 8000. If your setup is different, you'll need to adjust the link above accordingly.
+:blue_square: **Примечание:** В этом руководстве предполагается, что вы используете сервер разработки Django локально на порту 8000. Если у вас другие настройки, вам необходимо соответствующим образом изменить ссылку выше.
 
 ![Access lists list view](/images/step05-accesslist-list.png)
 
-We see that our table has successfully render the `name`, `rule_count`, and `default_action` columns that we defined in step three, and the `rule_count` column shows two rules assigned as expected.
+Мы видим, что наша таблица успешно отобразила столбцы `name`, `rule_count` и `default_action`, которые мы определили на третьем шаге, а в столбце `rule_count` показаны два правила, назначенные, как и ожидалось.
 
-If we click the "Add" button at top right, we'll be taken to the access list creation form. (Creating a new access list won'r work yet, but the form should render as seen below.)
+Если мы нажмем кнопку «Добавить» в правом верхнем углу, мы попадем на форму создания списка доступа. (Создание нового списка доступа пока не работает, но форма должна отображаться, как показано ниже.)
 
 ![Access list creation form](/images/step05-accesslist-form.png)
 
-However, if you click a link to an access list in the table, you'll be met by a `TemplateDoesNotExist` exception. This means exactly what it says: We have not yet defined a template for this view. Don't worry, that's coming up next!
+Однако если вы щелкнете ссылку на список доступа в таблице, вы столкнетесь с исключением «TemplateDoesNotExist». Это означает именно то, что здесь написано: мы еще не определили шаблон для этого представления. Не волнуйтесь, это будет дальше!
 
-:blue_square: **Note:** You might notice that the "add" view for rules still doesn't work, raising a `NoReverseMatch` exception. This is because we haven't yet defined the REST API backends required to support the dynamic form fields. We'll take care of this when we build out the REST API functionality in step nine.
+:blue_square: **Примечание:** Вы могли заметить, что представление «Добавить» для правил по-прежнему не работает, вызывая исключение NoReverseMatch. Это связано с тем, что мы еще не определили серверные части REST API, необходимые для поддержки полей динамической формы. Мы позаботимся об этом, когда на девятом этапе создадим функциональность REST API.
 
 <div align="center">
 
-:arrow_left: [Step 4: Forms](/tutorial/step04-forms.md) | [Step 6: Templates](/tutorial/step06-templates.md) :arrow_right:
+:arrow_left: [Шаг 4: Формы](/tutorial/step04-forms.md) | [Шаг 6: Шаблоны](/tutorial/step06-templates.md) :arrow_right:
 
 </div>
 
