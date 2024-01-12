@@ -22,7 +22,7 @@
 * [Шаг 5: Представления](/tutorial/step05-views.md)
 * [Шаг 6: Шаблоны](/tutorial/step06-templates.md)
 * [Шаг 7: Навигация](/tutorial/step07-navigation.md)
-* [Шаг 8: Фильтрация](/tutorial/step08-filter-sets.md)
+* [Шаг 8: Наборы фильтров](/tutorial/step08-filter-sets.md)
 * [Шаг 9: REST API](/tutorial/step09-rest-api.md)
 * [Шаг 10: GraphQL API](/tutorial/step10-graphql-api.md)
 * [Шаг 11: Поиск](/tutorial/step11-search.md)
