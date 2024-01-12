@@ -70,21 +70,21 @@ $ edit templates/netbox_access_lists/accesslist.html
 {% endblock content %}
 ```
 
-Here we've created a Boostrap 5 row and two column elements. In the first column, we have a simple card to display the access list's name and default action, as well as the number of rules assigned to it. And below it, you'll see an `include` tag which pulls in an additional template to render any custom fields associated with the model. In the second column, we've included two more templates to render tags and comments.
+Здесь мы создали строку Boostrap 5 и два элемента столбца. В первом столбце у нас есть простая карточка для отображения названия списка доступа и действия по умолчанию, а также количества назначенных ему правил. А под ним вы увидите тег include, который подключает дополнительный шаблон для отображения любых настраиваемых полей, связанных с моделью. Во втором столбце мы добавили еще два шаблона для отображения тегов и комментариев.
 
-:green_circle: **Tip:** If you're not sure how best to construct the page's layout, there are plenty of examples to reference within NetBox's core templates.
+:green_circle: **Совет:** Если вы не уверены, как лучше всего построить макет страницы, в основных шаблонах NetBox можно найти множество примеров.
 
-Let's take a look at our new template! Navigate to the list view again (at <http://localhost:8000/plugins/access-lists/access-lists/>), and follow the link through to a particular access list. You should see something like the image below.
+Давайте посмотрим на наш новый шаблон! Снова перейдите к представлению списка (по адресу <http://localhost:8000/plugins/access-lists/access-lists/>) и перейдите по ссылке к определенному списку доступа. Вы должны увидеть что-то вроде изображения ниже.
 
-:blue_square: **Note:** If NetBox complains that the template still does not exist, you may need to manually restart the development server (`manage.py runserver`).
+:blue_square: **Примечание:** Если NetBox сообщает, что шаблон все еще не существует, возможно, вам придется вручную перезапустить сервер разработки (`manage.py runserver`).
 
 ![Access list view](/images/step06-accesslist1.png)
 
 This is nice, but it would be handy to include the access list's assigned rules on the page as well.
 
-### Add a Rules Table
+### Добавление таблицы правил
 
-To include the access list rules, we'll need to provide additional _context data_ under the view. Open `views.py` and find the `AccessListView` class. (It should be the first class defined.) Add a `get_extra_context()` method to this class per the code below.
+Чтобы включить правила списка доступа, нам нужно будет предоставить дополнительные _контекстные данные_ под представлением. Откройте «views.py» и найдите класс «AccessListView». (Это должен быть первый определенный класс.) Добавьте к этому классу метод get_extra_context() согласно приведенному ниже коду.
 
 ```python
 class AccessListView(generic.ObjectView):
@@ -99,21 +99,21 @@ class AccessListView(generic.ObjectView):
         }
 ```
 
-This method does three things:
+Этот метод делает три вещи:
 
-1. Instantiate `AccessListRuleTable` with a queryset matching all rules assigned to this access list
-2. Configure the table instance according to the current request (to honor user preferences)
-3. Return a dictionary of context data referencing the table instance
+1. Создайет экземпляр AccessListRuleTable с набором запросов, соответствующим всем правилам, назначенным этому списку доступа.
+2. Настраивает экземпляр таблицы в соответствии с текущим запросом (с учетом предпочтений пользователя).
+3. Возвращает словарь контекстных данных, ссылающийся на экземпляр таблицы.
 
-This makes the table available to our template as the `rules_table` context variable. Let's add it to our template.
+Это делает таблицу доступной для нашего шаблона как контекстную переменную Rules_table. Добавим его в наш шаблон.
 
-First, we need to import the `render_table` tag from the `django-tables2` library, so that we can render the table as HTML. Add this at the top of the template, immediately below the `{% extends 'generic/object.html' %}` line:
+Во-первых, нам нужно импортировать тег render_table из библиотеки django-tables2, чтобы мы могли отображать таблицу в формате HTML. Добавьте это вверху шаблона, сразу под строкой `{% extends 'generic/object.html' %}`:
 
 ```
 {% load render_table from django_tables2 %}
 ```
 
-Then, immediately above the `{% endblock content %}` line at the end of the file, insert the following template code:
+Затем сразу над строкой `{% endblock content %}` в конце файла вставьте следующий код шаблона:
 
 ```
   <div class="row">
@@ -128,19 +128,19 @@ Then, immediately above the `{% endblock content %}` line at the end of the file
   </div>
 ```
 
-After refreshing the access list view in the browser, you should now see the rules table at the bottom of the page.
+После обновления списка доступа в браузере вы должны увидеть таблицу правил внизу страницы.
 
 ![Access list view with rules table](/images/step06-accesslist2.png)
 
-## Create the AccessListRule Template
+## Создание шаблона AccessListRule
 
-Speaking of rules, let's not forget about our `AccessListRule` model: It needs a template too. Create `accesslistrule.html` alongside our first template:
+Говоря о правилах, давайте не будем забывать о нашей модели AccessListRule: ей тоже нужен шаблон. Создайте `accesslistrule.html` рядом с нашим первым шаблоном:
 
 ```bash
 $ edit templates/netbox_access_lists/accesslistrule.html
 ```
 
-And copy the content below:
+И скопируйте содержимое ниже:
 
 ```
 {% extends 'generic/object.html' %}
@@ -221,19 +221,19 @@ And copy the content below:
 {% endblock content %}
 ```
 
-You'll probably be able to tell at this point what most of the above template code does, but here are a few details worth mentioning:
+На этом этапе вы, вероятно, сможете сказать, что делает большая часть приведенного выше кода шаблона, но вот несколько деталей, которые стоит упомянуть:
 
-* The URL for the rule's parent access list is retrieved by calling `object.access_list.get_absolute_url()` (the method we added in step five), _without_ the parentheses (a distinction of DTL). This method is used for related prefixes as well.
-* NetBox's `placeholder` filter is applied to the rule's description. (This renders a &mdash; for empty fields.)
-* The `protocol` and `action` attributes are rendered by calling e.g. `object.get_protocol_display()` (again without the parentheses). This is a [Django convention](https://docs.djangoproject.com/en/stable/ref/models/instances/#extra-instance-methods) for static choice fields to return the human-friendly label rather than the raw value.
+* URL-адрес родительского списка доступа правила получается путем вызова `object.access_list.get_absolute_url()` (метод, который мы добавили на пятом шаге), _без_ круглых скобок (отличие от DTL). Этот метод также используется для связанных префиксов.
+* К описанию правила применяется фильтр «заполнитель» NetBox. (Это отображает &mdash; для пустых полей.)
+* Атрибуты `protocol` и `action` отображаются, например, путем вызова. `object.get_protocol_display()` (опять без скобок). Это [соглашение Django](https://docs.djangoproject.com/en/stable/ref/models/instances/#extra-instance-methods) для полей статического выбора, чтобы возвращать удобную для пользователя метку, а не необработанный код.
 
 ![Access list rule view](/images/step06-accesslistrule.png)
 
-Feel free to experiment with different layouts and content before proceeding with the next step.
+Не стесняйтесь экспериментировать с различными макетами и контентом, прежде чем переходить к следующему шагу.
 
 <div align="center">
 
-:arrow_left: [Step 5: Views](/tutorial/step05-views.md) | [Step 7: Navigation](/tutorial/step07-navigation.md) :arrow_right:
+:arrow_left: [Step 5: Отображения](/tutorial/step05-views.md) | [Step 7: Навигация](/tutorial/step07-navigation.md) :arrow_right:
 
 </div>
 
