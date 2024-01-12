@@ -1,16 +1,16 @@
-# Step 5: Views
+# Шаг 5: Отображения
 
-Views are responsible for the business logic of your application. Generally, this means processing incoming requests, performing some action(s), and returning a response to the client. Each view typically has a URL associated with it, and can handle one or more types of HTTP requests (i.e. `GET` and/or `POST` requests).
+Отображения отвечают за бизнес-логику вашего приложения. Как правило, это означает обработку входящих запросов, выполнение некоторых действий и возврат ответа клиенту. Каждое отображение обычно имеет связанный с ним URL-адрес и может обрабатывать один или несколько типов HTTP-запросов (например, запросы GET и/или POST).
 
-Django provides a set of [generic view classes](https://docs.djangoproject.com/en/4.0/topics/class-based-views/generic-display/) which handle much of the boilerplate code needed to process requests. NetBox likewise provides a set of view classes to simplify the creation of views for creating, editing, deleting, and viewing objects. They also introduce support for NetBox-specific features such as custom fields and change logging.
+Django предоставляет набор [универсальных классов отображений] (https://docs.djangoproject.com/en/4.0/topics/class-based-views/generic-display/), которые обрабатывают большую часть шаблонного кода, необходимого для обработки запросов. NetBox также предоставляет набор классов отображений, упрощающих создание отображений для создания, редактирования, удаления и просмотра объектов. Они также предоставляют поддержку специфичных для NetBox функций, таких как настраиваемые поля и регистрация изменений.
 
-In this step, we'll create a set of views for each of our plugin's models.
+На этом этапе мы создадим набор представлений для каждой модели нашего плагина.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step04-forms`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout step04-forms`.
 
-## Create the Views
+## Создание отображения
 
-Begin by creating `views.py` in the `netbox_access_lists/` directory.
+Начните с создания файла view.py в каталоге netbox_access_lists/.
 
 ```bash
 $ cd netbox_access_lists/
