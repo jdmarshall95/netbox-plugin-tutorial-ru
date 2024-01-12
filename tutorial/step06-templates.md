@@ -1,41 +1,41 @@
-# Step 6: Templates
+# Шаг 6: Шаблоны
 
-Templates are responsible for rendering HTML content for NetBox views. Each template exists as a file with a mix of HTML and template code. Generally speaking, each model in a NetBox plugin must have its own template. Templates may also be created or customized for other views, but the default templates NetBox provides are suitable in most cases.
+Шаблоны отвечают за отображение HTML-содержимого для представлений NetBox. Каждый шаблон существует в виде файла, содержащего смесь HTML и кода шаблона. Вообще говоря, каждая модель в плагине NetBox должна иметь свой собственный шаблон. Шаблоны также можно создавать или настраивать для других представлений, но шаблоны по умолчанию, предоставляемые NetBox, подходят в большинстве случаев.
 
-NetBox's rendering backend uses the [Django Template Language](https://docs.djangoproject.com/en/stable/topics/templates/) (DTL). It will immediately look very familiar if you've used [Jinja2](https://jinja2docs.readthedocs.io/en/stable/), but be aware that there are some important differences between the two. Generally, DTL is much more limited in the types of logic it can execute: Directly executing Python code, for instance, is not possible. Be sure to study the Django documentation before attempting to create any complex templates.
+Серверная часть рендеринга NetBox использует [язык шаблонов Django](https://docs.djangoproject.com/en/stable/topics/templates/) (DTL). Если вы использовали [Jinja2](https://jinja2docs.readthedocs.io/en/stable/), он сразу покажется вам очень знакомым, но имейте в виду, что между ними есть некоторые важные различия. Как правило, DTL гораздо более ограничен в типах логики, которую он может выполнять: например, прямое выполнение кода Python невозможно. Обязательно изучите документацию Django, прежде чем пытаться создавать какие-либо сложные шаблоны.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step05-views`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout step05-views`.
 
-## Template File Structure
+## Структура файла шаблона
 
-NetBox looks for templates within the `templates/` directory (if it exists) within the plugin root. Within this directory, create a subdirectory bearing the name of the plugin:
+NetBox ищет шаблоны в каталоге `templates/` (если он существует) в корне плагина. В этом каталоге создайте подкаталог с именем плагина:
 
 ```bash
 $ cd netbox_access_lists/
 $ mkdir -p templates/netbox_access_lists/
 ```
 
-The template files will reside in this directory. Default templates are provided for all generic views except for `ObjectView`, so we'll need to create templates for our `AccessListView` and `AccessListRuleView` views.
+Файлы шаблонов будут находиться в этом каталоге. Шаблоны по умолчанию предоставляются для всех общих представлений, кроме ObjectView, поэтому нам нужно будет создать шаблоны для наших представлений AccessListView и AccessListRuleView.
 
-By default, each `ObjectView` subclass will look for a template bearing the name of its associated model. For instance, `AccessListView` will look for `accesslist.html`. This can be overriden by setting `template_name` on the view, but this behavior is suitable for our purposes.
+По умолчанию каждый подкласс ObjectView будет искать шаблон, содержащий имя связанной с ним модели. Например, AccessListView будет искать accesslist.html. Это можно переопределить, установив в представлении `template_name`, но такое поведение подходит для наших целей.
 
-## Create the AccessList Template
+## Создание шаблона AccessList
 
-Begin by creating the file `accesslist.html` in the plugin's template directory.
+Начните с создания файла accesslist.html в каталоге шаблонов плагина.
 
 ```bash
 $ edit templates/netbox_access_lists/accesslist.html
 ```
 
-Although we need to create our own template, NetBox has done much of the work for us, and provides a generic template that we can easily extend. At the top of the file, add an `extends` tag:
+Хотя нам нужно создать собственный шаблон, NetBox проделал за нас большую часть работы и предоставляет универсальный шаблон, который мы можем легко расширить. В верхней части файла добавьте тег «extends»:
 
 ```
 {% extends 'generic/object.html' %}
 ```
 
-This tells the rendering engine to first load the NetBox template at `generic/object.html` and populate only the content we provide within `block` tags.
+Это указывает механизму рендеринга сначала загрузить шаблон NetBox в `generic/object.html` и заполнить только тот контент, который мы предоставляем в тегах `block`.
 
-Let's extend the generic template's `content` block with some information about the access list.
+Давайте расширим блок содержимого общего шаблона некоторой информацией о списке доступа.
 
 ```
 {% block content %}
