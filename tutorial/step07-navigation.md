@@ -1,36 +1,36 @@
-# Step 7: Navigation
+# Шаг 7: Навигация
 
-So far, we've been manually entering URLs to access our plugin's views. This obviously will not suffice for regular use, so let's see about adding some links to NetBox's navigation menu.
+До сих пор мы вручную вводили URL-адреса для доступа к представлениям нашего плагина. Очевидно, что для регулярного использования этого будет недостаточно, поэтому давайте посмотрим, как добавить несколько ссылок в навигационное меню NetBox.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step06-templates`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout step06-templates`.
 
-## Adding Navigation Menu Items
+## Добавление пунктов меню навигации
 
-Begin by creating `navigation.py` in the `netbox_access_lists/` directory.
+Начните с создания файла navigation.py в каталоге netbox_access_lists/.
 
 ```bash
 $ cd netbox_access_lists/
 $ edit navigation.py
 ```
 
-We'll need to import the `PluginMenuItem` class provided by NetBox to add new menu items; do this at the top of the file.
+Нам нужно будет импортировать класс PluginMenuItem, предоставленный NetBox, чтобы добавить новые пункты меню; сделайте это в верхней части файла.
 
 ```python
 from extras.plugins import PluginMenuItem
 ```
 
-Next, we'll create a tuple named `menu_items`. This will hold our customized `PluginMenuItem` instances.
+Далее мы создадим кортеж с именем «menu_items». Здесь будут храниться наши настроенные экземпляры PluginMenuItem.
 
 ```python
 menu_items = ()
 ```
 
-Let's add a link to the list view for each of our models. This is done by instantiating `PluginMenuItem` with (at minimum) two arguments:
+Давайте добавим ссылку на представление списка для каждой из наших моделей. Это делается путем создания экземпляра PluginMenuItem с (минимум) двумя аргументами:
 
-* `link` - The name of the URL path to which we're linking
-* `link_text` - The text of the link
+* `link` — имя URL-пути, на который мы ссылаемся.
+* `link_text` — Текст ссылки.
 
-Create two instances of `PluginMenuItem` within `menu_items`:
+Создайте два экземпляра PluginMenuItem внутри Menu_items:
 
 ```python
 menu_items = (
@@ -45,31 +45,31 @@ menu_items = (
 )
 ```
 
-Upon reloading the page, you should see a new "Plugins" section appear at the end of the navigation menu, and below it, a section titled "NetBox Access Lists", with our two links. Navigating to either of these links will highlight the corresponding menu item.
+После перезагрузки страницы вы должны увидеть новый раздел «Плагины» в конце меню навигации, а под ним — раздел «Списки доступа NetBox» с двумя нашими ссылками. При переходе по любой из этих ссылок будет выделен соответствующий пункт меню.
 
-:blue_square: **Note:** If the menu items do not appear, try restarting the development server (`manage.py runserver`).
+:blue_square: **Примечание:** Если пункты меню не отображаются, попробуйте перезапустить сервер разработки (`manage.py runserver`).
 
 ![Navigation menu items](/images/step07-menu-items1.png)
 
-That's much more convenient!
+Это гораздо удобнее!
 
-### Adding Menu Buttons
+### Добавление кнопок меню
 
-While we're at it, we can add direct links to the "add" views for access lists and rules as buttons. We'll need to import two additional classes at the top of `navigation.py`: `PluginMenuButton` and `ButtonColorChoices`.
+Пока мы этим занимаемся, мы можем добавить прямые ссылки на представления «добавить» для списков доступа и правил в виде кнопок. Нам нужно будет импортировать два дополнительных класса в начало файла navigation.py: PluginMenuButton и ButtonColorChoices.
 
 ```python
 from extras.plugins import PluginMenuButton, PluginMenuItem
 from utilities.choices import ButtonColorChoices
 ```
 
-`PluginMenuButton` is used similarly to `PluginMenuItem`: Instantiate it with the necessary keyword arguments to effect a menu button. These arguments are:
+`PluginMenuButton` используется аналогично `PluginMenuItem`: создайте его экземпляр с необходимыми аргументами ключевого слова, чтобы вызвать кнопку меню. Эти аргументы таковы:
 
-* `link` - The name of the URL path to which the button links
-* `title` - The text displayed when the user hovers over the button
-* `icon_class` - CSS class name(s) indicating the icon to display
-* `color` - The button's color (choices are provided by `ButtonColorChoices`)
+* `link` — имя URL-пути, на который ссылается кнопка.
+* `title` — текст, отображаемый при наведении курсора мыши на кнопку.
+* `icon_class` — имя(а) класса CSS, указывающее отображаемый значок.
+* `color` — цвет кнопки (выбор предоставляется с помощью `ButtonColorChoices`)
 
-Create these instances in `navigation.py` _above_ `menu_items`. Because each menu item expects to receive an iterable of button instances, we'll create each of these inside a list.
+Создайте эти экземпляры в `navigation.py` _над_ `menu_items`. Поскольку каждый элемент меню ожидает получения итерации экземпляров кнопок, мы создадим каждый из них внутри списка.
 
 ```python
 accesslist_buttons = [
@@ -91,7 +91,7 @@ accesslistrule_buttons = [
 ]
 ```
 
-The buttons can then be passed to the menu items via the `buttons` keyword argument:
+Затем кнопки можно передать пунктам меню через аргумент ключевого слова «buttons»:
 
 ```python
 menu_items = (
@@ -108,13 +108,13 @@ menu_items = (
 )
 ```
 
-Now we should see green "add" buttons appear next to our menu links.
+Теперь мы должны увидеть зеленые кнопки «Добавить» рядом со ссылками нашего меню.
 
 ![Navigation menu items with buttons](/images/step07-menu-items2.png)
 
 <div align="center">
 
-:arrow_left: [Step 6: Templates](/tutorial/step06-templates.md) | [Step 8: Filter Sets](/tutorial/step08-filter-sets.md) :arrow_right:
+:arrow_left: [Step 6: Шаблоны](/tutorial/step06-templates.md) | [Step 8: Наборы фильтров](/tutorial/step08-filter-sets.md) :arrow_right:
 
 </div>
 
