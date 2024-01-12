@@ -1,8 +1,8 @@
-# Step 8: Filter Sets
+# Шаг 8: Наборы фильтров
 
-Filters enable users to request only a specific subset of objects matching a query; when filtering the sites list by status or region, for instance. NetBox employs the [`django-filters`](https://django-filter.readthedocs.io/en/stable/) library to build and apply filter sets for models. We can create filter sets to enable this same functionality for our plugin as well.
+Фильтры позволяют пользователям запрашивать только определенное подмножество объектов, соответствующих запросу; например, при фильтрации списка сайтов по статусу или региону. NetBox использует библиотеку [`django-filters`](https://django-filter.readthedocs.io/en/stable/) для создания и применения наборов фильтров для моделей. Мы можем создавать наборы фильтров, чтобы включить ту же функциональность и в наш плагин.
 
-:blue_square: **Note:** If you skipped the previous step, run `git checkout step07-navigation`.
+:blue_square: **Примечание:** Если вы пропустили предыдущий шаг, запустите `git checkout Step07-navigation`.
 
 ## Create a Filter Set
 
