@@ -375,33 +375,33 @@ from netbox### NetBox interactive shell
 Далее мы создадим несколько префиксов, на которые будем ссылаться в правилах:
 
 ```python
->>> prefix1 = Prefix(prefix='192.168.1.0/24')
->>> prefix1.save()
->>> prefix2 = Prefix(prefix='192.168.2.0/24')
->>> prefix2.save()
+prefix1 = Prefix(prefix='192.168.1.0/24')
+prefix1.save()
+prefix2 = Prefix(prefix='192.168.2.0/24')
+prefix2.save()
 ```
 
 И, наконец, мы создадим пару правил для нашего списка доступа:
 
 ```python
->>> AccessListRule(
-...     access_list=acl,
-...     index=10,
-...     protocol='tcp',
-...     destination_prefix=prefix1,
-...     destination_ports=[80, 443],
-...     action='permit',
-...     description='Web traffic'
-... ).save()
->>> AccessListRule(
-...     access_list=acl,
-...     index=20,
-...     protocol='udp',
-...     destination_prefix=prefix2,
-...     destination_ports=[53],
-...     action='permit',
-...     description='DNS'
-... ).save()
+AccessListRule(
+    access_list=acl,
+    index=10,
+    protocol='tcp',
+    destination_prefix=prefix1,
+    destination_ports=[80, 443],
+    action='permit',
+    description='Web traffic'
+).save()
+AccessListRule(
+    access_list=acl,
+    index=20,
+    protocol='udp',
+    destination_prefix=prefix2,
+    destination_ports=[53],
+    action='permit',
+    description='DNS'
+).save()
 >>> acl.rules.all()
 <RestrictedQuerySet [<AccessListRule: MyACL1: Rule 10>, <AccessListRule: MyACL1: Rule 20>]>
 ```
