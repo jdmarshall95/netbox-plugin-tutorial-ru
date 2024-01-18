@@ -89,16 +89,13 @@ class AccessListDeleteView(generic.ObjectDeleteView):
 class AccessListRuleView(generic.ObjectView):
     queryset = models.AccessListRule.objects.all()
 
-
 class AccessListRuleListView(generic.ObjectListView):
     queryset = models.AccessListRule.objects.all()
     table = tables.AccessListRuleTable
 
-
 class AccessListRuleEditView(generic.ObjectEditView):
     queryset = models.AccessListRule.objects.all()
     form = forms.AccessListRuleForm
-
 
 class AccessListRuleDeleteView(generic.ObjectDeleteView):
     queryset = models.AccessListRule.objects.all()
