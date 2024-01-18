@@ -355,7 +355,7 @@ Referenced by:
 Теперь, когда у нас установлены наши модели, давайте попробуем создать несколько объектов. Сначала войдите в оболочку NetBox. Это интерактивный интерфейс командной строки Python, который позволяет нам напрямую взаимодействовать с объектами NetBox и другими ресурсами
 
 ```bash
-$ python netbox/manage.py nbshell
+$ python manage.py nbshell
 from netbox### NetBox interactive shell
 ### Python 3.8.12 | Django 4.0.3 | NetBox 3.2.0
 ### lsmodels() will show available models. Use help(<model>) for more info.
