@@ -132,11 +132,11 @@ urlpatterns = (
 )
 ```
 
-We've chosen `access-lists` as the base URL for our `AccessList` model, but you are free to choose something different. However, it is recommended to retain the naming scheme shown, as several NetBox features rely on it. Also note that each of the views must be invoked by its `as_view()` method when passed to `path()`.
+Мы выбрали списки доступа в качестве базового URL-адреса для нашей модели AccessList, но вы можете выбрать что-то другое. Однако рекомендуется сохранить показанную схему именования, поскольку на нее опираются некоторые функции NetBox. Также обратите внимание, что каждое из представлений должно вызываться методом as_view() при передаче в path().
 
-:green_circle: **Tip:** The `<int:pk>` string you see in some of the URLs is a [path converter](https://docs.djangoproject.com/en/stable/topics/http/urls/#path-converters). Specifically, this is an integer (`int`) variable named `pk`. This value is extracted from the request URL and passed to the view when the request is processed, so that the specified object can be located in the database.
+:green_circle: **Совет:** Строка `<int:pk>`, которую вы видите в некоторых URL-адресах, представляет собой [конвертер путей](https://docs.djangoproject.com/en/stable/topics/http/URL/#path-converters). В частности, это целочисленная (int) переменная с именем pk. Это значение извлекается из URL-адреса запроса и передается в представление при обработке запроса, чтобы указанный объект можно было найти в базе данных.
 
-Let's add the rest of the paths now. You may find it helpful to separate the paths by model to make the file more readable.
+Давайте теперь добавим остальные пути. Возможно, вам будет полезно разделить пути по моделям, чтобы сделать файл более читабельным.
 
 ```python
 urlpatterns = (
