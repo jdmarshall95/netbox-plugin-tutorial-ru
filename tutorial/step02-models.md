@@ -316,7 +316,7 @@ $ tree
 Наконец, мы можем применить файл миграции, используя команду управления `migrate`:
 
 ```bash
-$ python netbox/manage.py migrate
+$ python manage.py migrate
 Operations to perform:
   Apply all migrations: admin, auth, circuits, contenttypes, dcim, django_rq, extras, ipam, netbox_access_lists, sessions, social_django, taggit, tenancy, users, virtualization, wireless
 Running migrations:
@@ -326,7 +326,7 @@ Running migrations:
 Если вам интересно, вы можете просмотреть вновь созданные таблицы базы данных, используя команду управления `dbshell` для входа в оболочку PostgreSQL:
 
 ```bash
-$ python netbox/manage.py dbshell
+$ python manage.py dbshell
 psql (10.19 (Ubuntu 10.19-0ubuntu0.18.04.1))
 SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
 Type "help" for help.
