@@ -167,7 +167,7 @@ urlpatterns = (
 from netbox.views.generic import ObjectChangeLogView
 ```
 
-Then, we'll add an extra path for each model inside `urlpatterns`:
+Затем мы добавим дополнительный путь для каждой модели внутри urlpatterns:
 
 ```python
 urlpatterns = (
